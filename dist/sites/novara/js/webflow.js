@@ -79,6 +79,14 @@
     if (el.children.length === 0 && el.textContent.trim()) { var s = document.createElement("span"); s.textContent = el.textContent; el.textContent = ""; el.appendChild(s); }
   });
 
+  /* CMS lists: order cards by the Order field (data-order) */
+  $$(".project-list").forEach(function (l) {
+    var it = Array.prototype.slice.call(l.children);
+    if (!it.some(function (c) { return c.querySelector("[data-order]"); })) return;
+    var n = function (c) { var e = c.querySelector("[data-order]"); return e ? parseFloat(e.getAttribute("data-order")) || 0 : 0; };
+    it.sort(function (a, b) { return n(a) - n(b); }).forEach(function (c) { l.appendChild(c); });
+  });
+
   /* CMS rail: drop empty media slots */
   $$(".pd-item video").forEach(function (v) { if (!v.getAttribute("src")) v.closest(".pd-item").remove(); });
   $$(".pd-item img").forEach(function (im) { if (!im.getAttribute("src")) im.closest(".pd-item").remove(); });
