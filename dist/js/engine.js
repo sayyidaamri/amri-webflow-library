@@ -213,7 +213,7 @@ window.AWL_RUN = function (C, ATLAS) {
   }
 
   // ---------- layout: the portrait is framed in the free part of the window ----------
-  var W = 0, H = 0, focal = 1, boxEl = $("#box"), topEl = $(".topbar")
+  var W = 0, H = 0, focal = 1, boxEl = $("#box"), topEl = $(".awl-topbar")
   var fr = { cx: 0, cy: 0, w: 0, h: 0, ready: false }
   function resize() {
     var cr = canvas.getBoundingClientRect()
@@ -265,8 +265,8 @@ window.AWL_RUN = function (C, ATLAS) {
     var L = -Math.max(b1.l, b2.l) - 1, R = Math.max(b1.r, b2.r) + 1, T = -b1.a - 1, B = gap + b2.d + 1
     stack.setAttribute("viewBox", [L, T, R - L, B - T].map(function (n) { return n.toFixed(1) }).join(" "))
     // phones: the round arrow sits at the end of the first line
-    var wpx = Math.max(1, document.querySelector(".bigname").clientWidth - 4), scale = wpx / (R - L)
-    var pad = parseFloat(getComputedStyle(document.querySelector(".bigname")).paddingBottom) || 0
+    var wpx = Math.max(1, document.querySelector(".awl-bigname").clientWidth - 4), scale = wpx / (R - L)
+    var pad = parseFloat(getComputedStyle(document.querySelector(".awl-bigname")).paddingBottom) || 0
     document.documentElement.style.setProperty("--row-b", (pad + (B - 0) * scale + b1.a * 0.12 * scale).toFixed(1) + "px")
   }
 
@@ -281,12 +281,12 @@ window.AWL_RUN = function (C, ATLAS) {
     target = Math.max(0, target + dy)
   }
   addEventListener("wheel", function (e) {
-    if (e.target.closest && (e.target.closest(".box") || e.target.closest(".mnav"))) return
+    if (e.target.closest && (e.target.closest(".awl-box") || e.target.closest(".mnav"))) return
     e.preventDefault()
     push(e.deltaY * (e.deltaMode === 1 ? 32 : e.deltaMode === 2 ? innerHeight : 1) * SPEED)
   }, { passive: false })
   var ty = null, tt = 0
-  addEventListener("touchstart", function (e) { ty = e.target.closest && (e.target.closest(".box") || e.target.closest(".mnav")) ? null : e.touches[0].clientY; tt = performance.now(); vel = 0 }, { passive: true })
+  addEventListener("touchstart", function (e) { ty = e.target.closest && (e.target.closest(".awl-box") || e.target.closest(".mnav")) ? null : e.touches[0].clientY; tt = performance.now(); vel = 0 }, { passive: true })
   addEventListener("touchmove", function (e) {
     if (ty === null) return
     e.preventDefault()
@@ -296,7 +296,7 @@ window.AWL_RUN = function (C, ATLAS) {
   addEventListener("touchend", function () { ty = null })
   addEventListener("keydown", function (e) {
     var ae = document.activeElement
-    if (ae && ae.closest && ae.closest(".p-scroll, input, textarea, select")) return
+    if (ae && ae.closest && ae.closest(".awl-p-scroll, input, textarea, select")) return
     var step = { ArrowDown: 160, PageDown: 600, " ": 600, ArrowUp: -160, PageUp: -600 }[e.key]
     if (step) { e.preventDefault(); push(step) }
     if (e.key === "Home") backToPortrait()
@@ -494,7 +494,7 @@ window.AWL_RUN = function (C, ATLAS) {
     if (boxEl.dataset.view !== v) boxEl.dataset.view = v
     body.classList.toggle("boxed", v !== "closed")
     body.classList.toggle("side", v === "about" || v === "contact")
-    document.querySelectorAll(".col-nav button").forEach(function (b) { b.classList.toggle("on", b.id === v + "-open") })
+    document.querySelectorAll(".awl-col-nav button").forEach(function (b) { b.classList.toggle("on", b.id === v + "-open") })
   }
   function setUrl(key, val) { try { var u = new URL(location.href); ["work", "open", "fly"].forEach(function (k) { u.searchParams.delete(k) }); if (val) u.searchParams.set(key, val); history.replaceState(null, "", u) } catch (e) {} }
   var workId = function (pi, mi) { return C.projects[pi].id + (mi ? "-" + (mi + 1) : "") }
@@ -615,14 +615,14 @@ window.AWL_RUN = function (C, ATLAS) {
 
   // ---------- clock ----------
   function clock() {
-    try { var s = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: SITE.timeZone || "Asia/Jakarta" }).format(new Date()); document.querySelectorAll("time.clock").forEach(function (el) { el.textContent = s }) } catch (e) {}
+    try { var s = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: SITE.timeZone || "Asia/Jakarta" }).format(new Date()); document.querySelectorAll(".awl-clock").forEach(function (el) { el.textContent = s }) } catch (e) {}
   }
   clock(); setInterval(clock, 15000)
 
   function setMenu() {}
 
   // ---------- loading: the mark draws itself while the image sheet decodes ----------
-  var loaderEl = $("#loader"), pens = [].slice.call(document.querySelectorAll(".ld-pen"))
+  var loaderEl = $("#loader"), pens = [].slice.call(document.querySelectorAll(".awl-ld-pen"))
   var LD = { target: 0.05, shown: 0, t0: performance.now(), last: performance.now(), resolve: null }
   var ldEase = function (x) { return easeIO3(Math.min(1, Math.max(0, x))) }
   function ldFrame(now) {
