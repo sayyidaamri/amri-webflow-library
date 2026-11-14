@@ -1,8 +1,9 @@
 /* Amri Webflow Library — page transitions and the way back home.
    Load it synchronously near the top of <body> on every page (home and library sites):
      <script src=".../dist/js/library.js"></script>
-   - Leaving a page through AWL_TRANSITION.go(url) covers the screen with flying shards, then navigates.
-   - Arriving after such a leave, the shards burst outward and reveal the page.
+   - AWL_TRANSITION.go(url, event, { style: "shards" | "fade", delay }) covers the screen (flying shards, or a dark veil)
+     and navigates; the home uses "fade" after its forward flight.
+   - Arriving after such a leave, the shards burst outward (or the veil lifts) to reveal the page.
    - On every page except the home ("/"), a floating button leads back to the library. */
 (function () {
   "use strict"
@@ -83,13 +84,32 @@
     })(t0)
   }
 
-  function go(url, ev) {
+  // a plain dark veil, used with the home flight
+  function fade(from, to, dur, done) {
+    ensureCanvas(); cv.style.display = "block"
+    cancelAnimationFrame(raf)
+    var t0 = performance.now()
+    ;(function frame(now) {
+      var t = Math.min(1, (now - t0) / dur), e = t * t * (3 - 2 * t), a = from + (to - from) * e
+      cx.setTransform(DPR, 0, 0, DPR, 0, 0); cx.clearRect(0, 0, W, H)
+      cx.fillStyle = "rgba(" + BG[0] + "," + BG[1] + "," + BG[2] + "," + a.toFixed(3) + ")"; cx.fillRect(0, 0, W, H)
+      if (t < 1) raf = requestAnimationFrame(frame)
+      else { if (to <= 0) { cx.clearRect(0, 0, W, H); cv.style.display = "none" } if (done) done() }
+    })(t0)
+  }
+
+  // opts.style: "shards" (default) or "fade"; opts.delay: ms before the cover starts
+  function go(url, ev, opts) {
     if (!url) return
+    opts = opts || {}
+    var style = opts.style === "fade" ? "fade" : "shards", delay = opts.delay || 0
     var ox = ev && ev.clientX != null ? ev.clientX : innerWidth / 2, oy = ev && ev.clientY != null ? ev.clientY : innerHeight / 2
-    try { sessionStorage.setItem(KEY, JSON.stringify({ x: ox / innerWidth, y: oy / innerHeight, t: Date.now() })) } catch (e) {}
+    try { sessionStorage.setItem(KEY, JSON.stringify({ x: ox / innerWidth, y: oy / innerHeight, t: Date.now(), style: style })) } catch (e) {}
     if (reduced) { location.href = url; return }
-    cv && (cv.style.display = "block")
-    run("cover", 820, ox, oy, function () { location.href = url })
+    setTimeout(function () {
+      if (style === "fade") fade(0, 1, 420, function () { location.href = url })
+      else { cv && (cv.style.display = "block"); run("cover", 820, ox, oy, function () { location.href = url }) }
+    }, delay)
   }
 
   // arriving: start covered, then burst outward once the page has painted
@@ -98,11 +118,14 @@
     try { s = JSON.parse(sessionStorage.getItem(KEY) || "null"); sessionStorage.removeItem(KEY) } catch (e) {}
     if (!s || Date.now() - s.t > 15000 || reduced) return
     ensureCanvas()
-    var ox = (s.x || 0.5) * innerWidth, oy = (s.y || 0.5) * innerHeight
-    draw(1, ox, oy, "cover")
+    var ox = (s.x || 0.5) * innerWidth, oy = (s.y || 0.5) * innerHeight, soft = s.style === "fade"
+    if (soft) { cx.setTransform(DPR, 0, 0, DPR, 0, 0); cx.fillStyle = "rgb(" + BG.join(",") + ")"; cx.fillRect(0, 0, W, H) }
+    else draw(1, ox, oy, "cover")
     var started = false
-    var burst = function () { if (started) return; started = true; setTimeout(function () { run("reveal", 1100, innerWidth / 2, innerHeight / 2) }, 120) }
-    if (document.readyState === "complete") burst(); else { addEventListener("load", burst); setTimeout(burst, 1800) }
+    var burst = function () { if (started) return; started = true; setTimeout(function () { if (soft) fade(1, 0, 700); else run("reveal", 1100, innerWidth / 2, innerHeight / 2) }, soft ? 60 : 120) }
+    if (document.readyState === "complete") burst()
+    else if (soft) { if (document.readyState !== "loading") burst(); else document.addEventListener("DOMContentLoaded", burst); setTimeout(burst, 900) }
+    else { addEventListener("load", burst); setTimeout(burst, 1800) }
   }
   // back/forward cache: never come back to a covered screen
   addEventListener("pageshow", function (e) { if (e.persisted && cv) { cancelAnimationFrame(raf); cx.clearRect(0, 0, W, H); cv.style.display = "none" } })

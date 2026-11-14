@@ -271,9 +271,10 @@ window.AWL_RUN = function (C, ATLAS) {
   }
 
   // ---------- input: endless flight ----------
-  var target = 0, dist = 0, vel = 0, mx = 0, my = 0, smx = 0, smy = 0, last = performance.now(), rewind = null, closeAcc = 0
+  var warp = 0, target = 0, dist = 0, vel = 0, mx = 0, my = 0, smx = 0, smy = 0, last = performance.now(), rewind = null, closeAcc = 0
   var SPEED = 0.55
   function push(dy) {
+    if (warp) return
     if (isOpen()) { closeAcc += Math.abs(dy); if (closeAcc < 120) return; closeAll() }
     closeAcc = 0
     if (rewind) { rewind = null; target = dist }
@@ -446,7 +447,11 @@ window.AWL_RUN = function (C, ATLAS) {
   function tick(now) {
     var dt = Math.min(0.05, (now - last) / 1000); last = now
     if (ty === null && Math.abs(vel) > 0.1) { push(vel); vel *= Math.exp(-dt * 3.5) }
-    if (rewind) {
+    if (warp) {
+      // leaving for a website: the flight speeds up straight ahead, no hands on the wheel
+      var wt = (now - warp) / 1000
+      dist += dt * (260 + wt * wt * 2600); target = dist
+    } else if (rewind) {
       var t = Math.min(1, (now - rewind.t0) / rewind.dur)
       dist = target = rewind.from * (1 - easeIO3(t))
       if (t >= 1) { rewind = null; dist = target = 0 }
@@ -532,14 +537,19 @@ window.AWL_RUN = function (C, ATLAS) {
     boxEl.style.height = Math.round(boxEl.getBoundingClientRect().height - (s.height - need)) + "px"
   }
   addEventListener("resize", fitBox)
-  // leaving for a website: the camera holds still while the shards close in (library.js)
+  // leaving for a website: close the box and fly forward into the work, then the page fades over (library.js)
   $("#p-link").addEventListener("click", function (e) {
     var href = this.getAttribute("href")
     if (!href || e.metaKey || e.ctrlKey || e.shiftKey || !window.AWL_TRANSITION) return
     e.preventDefault()
-    vel = 0; rewind = null; target = dist
-    window.AWL_TRANSITION.go(href, e)
+    if (warp) return
+    closeAll(); vel = 0; rewind = null; pendingOpen = null; aim.on = false
+    if (reduced) { window.AWL_TRANSITION.go(href, e, { style: "fade", delay: 0 }); return }
+    warp = performance.now()
+    window.AWL_TRANSITION.go(href, e, { style: "fade", delay: 950 })
   })
+  // back/forward cache: return to the portrait, not to a frozen flight
+  addEventListener("pageshow", function (e) { if (e.persisted && warp) { warp = 0; rewind = null; vel = 0; dist = target = 0 } })
   function closeProject() {
     if (boxEl.dataset.view !== "project") return
     setUrl(); document.title = BASE_TITLE
