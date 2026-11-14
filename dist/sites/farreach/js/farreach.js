@@ -15,6 +15,7 @@
   var easeIO = function (t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
   var ARROW = '<svg viewBox="0 0 18 16" aria-hidden="true"><path d="M10 0.9 17.1 8 10 15.1 8.4 13.5 12.8 9.1H0.9V6.9H12.8L8.4 2.5Z" fill="currentColor"/></svg>';
   var STAR = '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M44 0h12v35.5L81.1 10.4l8.5 8.5L64.5 44H100v12H64.5l25.1 25.1-8.5 8.5L56 64.5V100H44V64.5L18.9 89.6l-8.5-8.5L35.5 56H0V44h35.5L10.4 18.9l8.5-8.5L44 35.5z"/></svg>';
+  var VBASE = "https://cdn.jsdelivr.net/gh/sayyidaamri/amri-webflow-library@01a3350012ac82806e6072e8ed61d4bd50482d45/dist/sites/farreach/video/";
   var hooks = [];
   var addScroll = function (fn) { hooks.push(fn); fn(); };
   var heroActive = function () { return false; };
@@ -33,6 +34,7 @@
   // turn every [data-fr-video] into poster image + lazy <video>
   $$("[data-fr-video]", root).forEach(function (box) {
     var url = box.getAttribute("data-fr-video"); if (!url) return;
+    if (url.indexOf("/") < 0) url = VBASE + url + ".mp4";
     var img = box.querySelector("img");
     var v = document.createElement("video");
     v.className = "fr-video"; v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("playsinline", ""); v.setAttribute("muted", ""); v.preload = "none";
@@ -119,13 +121,13 @@
 
   /* ---------- reveal ---------- */
   var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }); }, { rootMargin: "0px 0px -8% 0px" });
-  $$(".fr-rv", root).forEach(function (el) { io.observe(el); });
+  $$("[data-fr-rv]", root).forEach(function (el) { io.observe(el); });
 
   /* ---------- logos marquee ---------- */
   $$(".fr-logo_track", root).forEach(function (t) { $$(":scope > *", t).forEach(function (c) { var k = c.cloneNode(true); k.setAttribute("aria-hidden", "true"); t.appendChild(k); }); });
 
   /* ---------- big marquee ---------- */
-  $$(".fr-bm", root).forEach(function (sec) {
+  $$(".section_fr-bm", root).forEach(function (sec) {
     var track = $(".fr-bm_track", sec), first = track && track.firstElementChild; if (!first) return;
     if (!first.querySelector("svg")) first.insertAdjacentHTML("beforeend", STAR);
     for (var i = 0; i < 3; i++) { var k = first.cloneNode(true); k.setAttribute("aria-hidden", "true"); track.appendChild(k); }
@@ -209,7 +211,7 @@
   });
 
   /* ---------- stats (rolling digits) ---------- */
-  $$(".fr-stats", root).forEach(function (sec) {
+  $$(".section_fr-stats", root).forEach(function (sec) {
     var cols = $$(".fr-stat", sec);
     var list = $$(".fr-stat_src", sec).map(function (s) { return [s.getAttribute("data-num"), s.getAttribute("data-label"), s.getAttribute("data-client"), s.getAttribute("data-href")]; });
     if (!cols.length || !list.length) return;
@@ -366,7 +368,7 @@
     if (header) { header.classList.toggle("on-hero", heroActive()); header.classList.toggle("compact", y > vh * 0.72 || root.hasAttribute("data-fr-compact")); }
     if (footer) {
       var ft = footer.getBoundingClientRect().top;
-      root.classList.toggle("is-yellow", ft < vh * 0.5);
+      root.classList.toggle("fr-yel", ft < vh * 0.5);
       if (flyFoot && slotFoot) {
         var p = clamp((vh - ft) / (vh * 0.78)), vw = doc.clientWidth;
         var padEl = $(".padding-global.is-fr", footer) || footer; var pad = parseFloat(getComputedStyle(padEl).paddingLeft) || 0;
