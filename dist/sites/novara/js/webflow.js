@@ -89,7 +89,8 @@
     else if (!next.getAttribute("href") || next.getAttribute("href") === "#") next.setAttribute("href", next.dataset.href);
   }
   var st = document.createElement("style");
-  st.textContent = "#pd-right .w-richtext+h4{margin-top:3.6vw}#pd-desc .w-richtext p+p{margin-top:1.1vw}";
+  st.textContent = "#pd-right .w-richtext+h4{margin-top:3.6vw}#pd-desc .w-richtext p+p{margin-top:1.1vw}"
+    + "@media (max-width:767px){#menu{z-index:1}#logo,#back-btn,#header-right{z-index:2}.menu-open #menu-btn{background:#fff;color:#000}}";
   document.head.appendChild(st);
 
   /* same-site absolute links (CMS Link fields) → paths, so the page transition runs */
