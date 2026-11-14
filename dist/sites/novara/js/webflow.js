@@ -90,7 +90,8 @@
   }
   var st = document.createElement("style");
   st.textContent = "#pd-right .w-richtext+h4{margin-top:3.6vw}#pd-desc .w-richtext p+p{margin-top:1.1vw}"
-    + "@media (max-width:767px){#menu{z-index:1}#logo,#back-btn,#header-right{z-index:2}.menu-open #menu-btn{background:#fff;color:#000}}";
+    + "@media (max-width:767px){#menu{z-index:1}#logo,#back-btn,#header-right{z-index:2}.menu-open #menu-btn{background:#fff;color:#000}}"
+    + "@media (hover:none){#menu-btn:hover{background:var(--dark-white)}#menu-btn:hover .menu-btn-dots{transform:none}html.menu-open #menu-btn{background:#fff}html.menu-open #menu-btn .menu-btn-dots{transform:rotate(90deg)}}";
   document.head.appendChild(st);
 
   /* same-site absolute links (CMS Link fields) → paths, so the page transition runs */
