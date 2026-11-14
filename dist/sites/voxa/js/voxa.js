@@ -336,8 +336,15 @@
     setTab(new URLSearchParams(location.search).get("c") || "business");
     $$("[data-vx-chip]", form).forEach(function (c) {
       var box = $("input[type=checkbox]", c);
-      if (box) box.addEventListener("change", function () { c.toggleAttribute("data-on", box.checked); var cell = c.closest("[data-vx-cell]"); if (cell) cell.removeAttribute("data-error"); });
+      if (!box) return;
+      function sync() { c.toggleAttribute("data-on", box.checked); var cell = c.closest("[data-vx-cell]"); if (cell) cell.removeAttribute("data-error"); }
+      box.addEventListener("change", sync);
+      // Webflow nests its own hidden checkbox label inside the chip, so the chip toggles the box itself
+      c.addEventListener("click", function (e) { if (e.target === box) return; e.preventDefault(); box.checked = !box.checked; box.dispatchEvent(new Event("change", { bubbles: true })); });
+      c.setAttribute("role", "checkbox"); c.tabIndex = 0;
+      c.addEventListener("keydown", function (e) { if (e.key === " " || e.key === "Enter") { e.preventDefault(); c.click(); } });
     });
+    $$("input[type=email]", form).forEach(function (m) { m.removeAttribute("required"); });
     function clear(e) { var c = e.target.closest("[data-vx-cell]"); if (c) c.removeAttribute("data-error"); }
     form.addEventListener("input", clear); form.addEventListener("change", clear);
     // validate in the capture phase, before Webflow's own submit handler
