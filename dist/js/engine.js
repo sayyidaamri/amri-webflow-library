@@ -660,13 +660,13 @@ window.AWL_RUN = function (C, ATLAS) {
   var fontsReady = document.fonts && document.fonts.load ? Promise.race([document.fonts.load('italic 100px "Instrument Serif"'), new Promise(function (r) { setTimeout(r, 1500) })]) : Promise.resolve()
   fontsReady.then(function () { fitName(); start() }, start)
   window.__cosmos = { get dist() { return dist }, set target(v) { target = v }, openProject: openProject, goToWork: goToWork, world: world, camera: camera, pick: pick, screenOf: screenOf, get hover() { return hoverTile } }
-}
+};
 
 /* ---------- AWL boot: the library list on the Webflow page becomes the cards ----------
    Markup (Webflow-native, hidden):  [data-awl-item] with optional data-id, containing
      [data-awl="title"], [data-awl="kind"], [data-awl="desc"], [data-awl="tags"] (comma list),
      an <a data-awl="link" href="/folder/home"> and one or more <img> (the pictures shown as cards). */
-(function () {
+;(function () {
   "use strict"
   var F = window.COSMOS_FACE, TW = 480, TH = 360, MAXCOLS = 8
   var txt = function (el, k) { var n = el.querySelector('[data-awl="' + k + '"]'); return n ? n.textContent.trim() : "" }
