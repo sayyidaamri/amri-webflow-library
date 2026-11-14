@@ -321,5 +321,5 @@ body.far .social { bottom: calc(var(--pad) + 52px); }
 
 /* ---------- Webflow page ---------- */
 [data-awl-list] { display: none !important; }
-.awl-root { position: relative; }
+.awl-root { position: relative; color: var(--ink); font: 16px/1.5 var(--sans); }
 .awl-root .link { text-decoration: none; }
