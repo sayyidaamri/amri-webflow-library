@@ -354,6 +354,8 @@
         else if (!send.disabled && send.hasAttribute("data-verifying")) { send.removeAttribute("data-verifying"); send.value = label; }
       };
       new MutationObserver(sync).observe(send, { attributes: true, attributeFilter: ["disabled", "class"] }); sync();
+      // Turnstile can fail silently (e.g. embedded or privacy-hardened browsers): say so after a while
+      setTimeout(function () { if (send.disabled && send.hasAttribute("data-verifying")) { send.value = "Verification failed. Use another browser or email us"; send.setAttribute("data-failed", ""); } }, 15000);
     }
     function clear(e) { var c = e.target.closest("[data-vx-cell]"); if (c) c.removeAttribute("data-error"); }
     form.addEventListener("input", clear); form.addEventListener("change", clear);
