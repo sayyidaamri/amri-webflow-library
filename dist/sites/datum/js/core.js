@@ -367,7 +367,7 @@
   /* ------------------------------------------------------------------ footer reveal + CTA parallax */
   const foot = $(".foot");
   if (foot) new IntersectionObserver(([e]) => e.isIntersecting && foot.classList.add("is-in"), { threshold: 0.25 }).observe(foot);
-  const cta = $(".cta");
+  const cta = $(".dt-cta");
   if (cta && !reduced) {
     const media = $(".cta__media", cta), inner = $(".cta__in", cta);
     const tick = () => {

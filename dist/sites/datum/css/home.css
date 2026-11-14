@@ -164,9 +164,9 @@ body.pg-home { background: var(--c-grey); }
 .sc-case__bar { margin-top: 1.6rem; }
 
 /* ------------------------------------------------------------- white card (scales in after the scene) */
-.card { position: relative; z-index: 60; margin-top: -100vh; }
+.dt-card { position: relative; z-index: 60; margin-top: -100vh; }
 .card__in { background: #fff; transform-origin: 50% 0; will-change: transform; }
-@media (max-width: 767px) { .card { margin-top: 0; } }
+@media (max-width: 767px) { .dt-card { margin-top: 0; } }
 
 /* about */
 .ab { min-height: 100vh; display: flex; flex-direction: column; background: #fff; }
