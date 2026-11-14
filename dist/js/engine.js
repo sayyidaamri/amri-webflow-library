@@ -227,7 +227,7 @@ window.AWL_RUN = function (C, ATLAS) {
   }
   function isOpen() { return boxEl.dataset.view !== "closed" }
   function stage(dt) {
-    var wide = W > 860, open = isOpen()
+    var wide = W > 991, open = isOpen()
     var top = Math.max(topEl.getBoundingClientRect().bottom + 10, H * 0.085)
     var x0 = 0, x1 = W, y0 = top, y1 = Math.max(top + 200, H * 1.07)
     if (open) { var rb = boxEl.getBoundingClientRect(); if (wide) x0 = rb.right; else y1 = Math.max(top + 160, H - rb.height - 30) }
@@ -527,7 +527,7 @@ window.AWL_RUN = function (C, ATLAS) {
     requestAnimationFrame(fitBox)
   }
   function fitBox() {
-    if (boxEl.dataset.view !== "project" || W > 860) { boxEl.style.height = ""; return }
+    if (boxEl.dataset.view !== "project" || W > 991) { boxEl.style.height = ""; return }
     // phones: the sheet is as tall as a single piece needs
     boxEl.style.height = ""
     if (scrollEl.classList.contains("multi")) return
@@ -562,7 +562,7 @@ window.AWL_RUN = function (C, ATLAS) {
     if (boxEl.dataset.view === "project") { gallery.querySelectorAll("video").forEach(function (x) { x.pause() }); setUrl(); document.title = BASE_TITLE }
     boxEl.style.height = ""; sideView = v; closeAcc = 0; FOCUS.closing = true
     setView(v)
-    if (v === "contact") { resetForm(); setTimeout(function () { if (W > 860) cform.elements.name.focus({ preventScroll: true }) }, 450) }
+    if (v === "contact") { resetForm(); setTimeout(function () { if (W > 991) cform.elements.name.focus({ preventScroll: true }) }, 450) }
   }
   function closeSide() { if (sideView) { sideView = ""; setView("closed") } }
   function closeAll() { closeProject(); closeSide() }
@@ -588,7 +588,7 @@ window.AWL_RUN = function (C, ATLAS) {
     closeAll(); setMenu(false)
     var k = base + NSEQ * Math.max(0, Math.ceil((laneIndexAt(dist) - base - 2) / NSEQ))   // the next time it comes round
     var q = lanePos(k), depth = Math.min(60, Math.max(40, q.h * 5.7)), at = q.z - depth
-    var lift = W > 860 ? (H * 0.075 * depth) / focal : 0
+    var lift = W > 991 ? (H * 0.075 * depth) / focal : 0
     aim.tx = q.x; aim.ty = q.y - lift; aim.on = true; aim.at = at
     rewind = null; target = at
     pendingOpen = { pi: pi, mi: 0, at: at, t0: performance.now(), tile: L0 + (k % LANE.n) }
