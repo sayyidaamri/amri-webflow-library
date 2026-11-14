@@ -345,6 +345,16 @@
       c.addEventListener("keydown", function (e) { if (e.key === " " || e.key === "Enter") { e.preventDefault(); c.click(); } });
     });
     $$("input[type=email]", form).forEach(function (m) { m.removeAttribute("required"); });
+    // Webflow keeps the submit disabled until Cloudflare Turnstile returns a token: show that state
+    var send = $("input[type=submit]", form);
+    if (send && window.MutationObserver) {
+      var label = send.value, wait = send.getAttribute("data-wait");
+      var sync = function () {
+        if (send.disabled && send.value !== wait) { send.value = "Verifying\u2026"; send.setAttribute("data-verifying", ""); }
+        else if (!send.disabled && send.hasAttribute("data-verifying")) { send.removeAttribute("data-verifying"); send.value = label; }
+      };
+      new MutationObserver(sync).observe(send, { attributes: true, attributeFilter: ["disabled", "class"] }); sync();
+    }
     function clear(e) { var c = e.target.closest("[data-vx-cell]"); if (c) c.removeAttribute("data-error"); }
     form.addEventListener("input", clear); form.addEventListener("change", clear);
     // validate in the capture phase, before Webflow's own submit handler

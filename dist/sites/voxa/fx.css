@@ -127,5 +127,6 @@ body[data-tab=career] .vx-cform_bar,body[data-tab=career] .vx-cform_done{backgro
 .vx-cform_bar[data-error] .vx-cform_email::placeholder{color:#fff}
 .vx-cform_bar[data-error]{animation:vx-shake .4s}
 @keyframes vx-shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.vx-cform_send[data-verifying],.vx-cform_send:disabled{opacity:.55;cursor:wait}
 .vx-cform_send{transition:opacity .3s,letter-spacing .4s var(--vx-ease);cursor:pointer}.vx-cform_send:hover{letter-spacing:.06em}
 @media (prefers-reduced-motion:reduce){.vx-brands_track{animation:none}}
