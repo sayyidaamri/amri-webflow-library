@@ -745,8 +745,16 @@ window.AWL_RUN = function (C, ATLAS) {
       }
       remap[c] = (c % 3 === 0 && images.length > 1) ? b2 : b1
     }
-    // flying order: round-robin across websites (1st picture of each, then 2nd of each, ...) so neighbours never share a website
-    var seq = images.map(function (_, n) { return n }).sort(function (a, b) { return (images[a][1] - images[b][1]) || (images[a][0] - images[b][0]) })
+    // flying order: each website's pictures spread evenly through the lane (newest website first), then no two neighbours from the same website where possible
+    var cnt = {}, P = function (n) { return images[n][0] }
+    images.forEach(function (im) { cnt[im[0]] = (cnt[im[0]] || 0) + 1 })
+    var seq = images.map(function (_, n) { return n }).sort(function (a, b) { var A = images[a], B = images[b]; return (A[1] / cnt[A[0]] - B[1] / cnt[B[0]]) || (A[0] - B[0]) })
+    for (var i = 1; i < seq.length; i++) {
+      if (P(seq[i]) !== P(seq[i - 1])) continue
+      var j = i + 1; while (j < seq.length && P(seq[j]) === P(seq[i - 1])) j++
+      if (j < seq.length) { seq.splice(i, 0, seq.splice(j, 1)[0]); continue }
+      for (var k2 = i - 1; k2 > 0; k2--) if (P(seq[k2 - 1]) !== P(seq[i]) && P(seq[k2]) !== P(seq[i])) { seq.splice(k2, 0, seq.splice(i, 1)[0]); break }
+    }
     var C = {}
     for (var key in F) C[key] = F[key]
     C.projects = projects; C.images = images; C.seq = seq; C.remap = remap; C.selected = [0]
