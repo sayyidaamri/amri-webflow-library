@@ -92,6 +92,11 @@
   st.textContent = "#pd-right .w-richtext+h4{margin-top:3.6vw}#pd-desc .w-richtext p+p{margin-top:1.1vw}";
   document.head.appendChild(st);
 
+  /* same-site absolute links (CMS Link fields) → paths, so the page transition runs */
+  $$('a[href^="http"]').forEach(function (a) {
+    try { var u = new URL(a.href); if (u.host === location.host || /\.webflow\.io$/.test(u.host) && /^\/novara/.test(u.pathname)) a.setAttribute("href", u.pathname + u.search + u.hash); } catch (e) {}
+  });
+
   /* active menu link */
   var path = location.pathname.replace(/\/$/, "");
   $$(".menu-link").forEach(function (a) {
