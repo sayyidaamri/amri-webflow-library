@@ -282,6 +282,7 @@
   $$("[data-vx-video]").forEach(function (box) {
     var v = $("video", box), btn = $("[data-vx-play]", box);
     if (!btn) return;
+    if (v) { v.muted = true; v.addEventListener("click", function () { v.pause(); box.removeAttribute("data-playing"); }); }
     btn.addEventListener("click", function () {
       if (!v || !(v.currentSrc || v.getAttribute("src"))) { box.setAttribute("data-playing", ""); setTimeout(function () { box.removeAttribute("data-playing"); }, 1600); return; }
       if (v.paused) { v.play(); box.setAttribute("data-playing", ""); } else { v.pause(); box.removeAttribute("data-playing"); }
@@ -320,51 +321,39 @@
     if (ghost) { ghost.setAttribute("role", "button"); ghost.tabIndex = 0; ghost.addEventListener("click", function (e) { e.preventDefault(); go(); }); }
   });
 
-  /* ---------- Contact: tabs, chips, dropdowns, attach, validation ---------- */
+  /* ---------- Contact: native Webflow form (tabs, chips, validation) ---------- */
   var form = $("[data-vx-form]");
   if (form) {
-    var tabs = $$("[data-vx-tab]"), panes = $$("[data-vx-pane]", form);
+    var tabs = $$("[data-vx-tab]"), panes = $$("[data-vx-pane]", form), inq = $("[data-vx-inquiry]", form);
     function setTab(k, push) {
       if (!$('[data-vx-pane="' + k + '"]', form)) k = "business";
       body.setAttribute("data-tab", k);
-      tabs.forEach(function (t) { var on = t.getAttribute("data-vx-tab") === k; t.toggleAttribute("data-on", on); t.setAttribute("aria-selected", on); });
-      panes.forEach(function (p) { p.hidden = p.getAttribute("data-vx-pane") !== k; });
+      tabs.forEach(function (t) { var on = t.getAttribute("data-vx-tab") === k; t.toggleAttribute("data-on", on); t.setAttribute("aria-selected", on); if (on && inq) inq.value = t.textContent.trim(); });
+      panes.forEach(function (p) { var off = p.getAttribute("data-vx-pane") !== k; p.hidden = off; $$("input, select, textarea", p).forEach(function (f) { f.disabled = off; }); });
       if (push) history.replaceState(null, "", "?c=" + k);
     }
     tabs.forEach(function (t) { t.setAttribute("role", "tab"); t.tabIndex = 0; t.addEventListener("click", function () { setTab(t.getAttribute("data-vx-tab"), true); }); });
     setTab(new URLSearchParams(location.search).get("c") || "business");
-    $$("[data-vx-chip]", form).forEach(function (c) { c.addEventListener("click", function () { c.toggleAttribute("data-on"); c.closest("[data-vx-cell]").removeAttribute("data-error"); }); });
-    function closeAll() { $$("[data-vx-dd][data-open]", form).forEach(function (x) { x.removeAttribute("data-open"); }); }
-    $$("[data-vx-dd]", form).forEach(function (dd) {
-      var btn = $("[data-vx-dd-btn]", dd), lbl = $("span", btn);
-      btn.addEventListener("click", function (e) { e.stopPropagation(); var open = !dd.hasAttribute("data-open"); closeAll(); dd.toggleAttribute("data-open", open); });
-      $$("[data-vx-dd-list] button", dd).forEach(function (o) {
-        o.addEventListener("click", function () {
-          $$("[data-vx-dd-list] button", dd).forEach(function (x) { x.removeAttribute("data-on"); });
-          o.setAttribute("data-on", ""); lbl.textContent = o.textContent; dd.setAttribute("data-value", o.textContent);
-          dd.removeAttribute("data-open"); dd.closest("[data-vx-cell]").removeAttribute("data-error");
-        });
-      });
+    $$("[data-vx-chip]", form).forEach(function (c) {
+      var box = $("input[type=checkbox]", c);
+      if (box) box.addEventListener("change", function () { c.toggleAttribute("data-on", box.checked); var cell = c.closest("[data-vx-cell]"); if (cell) cell.removeAttribute("data-error"); });
     });
-    d.addEventListener("click", closeAll);
-    d.addEventListener("keydown", function (e) { if (e.key === "Escape") closeAll(); });
-    $$("[data-vx-attach] input", form).forEach(function (inp) {
-      inp.addEventListener("change", function () { var f = inp.files[0]; if (!f) return; $("[data-vx-attach-txt]", inp.closest("[data-vx-attach]")).textContent = f.name + " · " + Math.max(1, Math.round(f.size / 1024)) + " KB"; });
-    });
-    form.addEventListener("input", function (e) { var c = e.target.closest("[data-vx-cell]"); if (c) c.removeAttribute("data-error"); });
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
+    function clear(e) { var c = e.target.closest("[data-vx-cell]"); if (c) c.removeAttribute("data-error"); }
+    form.addEventListener("input", clear); form.addEventListener("change", clear);
+    // validate in the capture phase, before Webflow's own submit handler
+    d.addEventListener("submit", function (e) {
+      if (e.target !== form) return;
       var pane = $('[data-vx-pane="' + body.getAttribute("data-tab") + '"]', form), ok = true;
       $$("[data-required]", pane).forEach(function (c) {
         var ty = c.getAttribute("data-required"), bad;
-        if (ty === "chips") bad = !$("[data-vx-chip][data-on]", c);
-        else if (ty === "dd") bad = !$("[data-vx-dd]", c).getAttribute("data-value");
-        else bad = !$("input", c).value.trim();
+        if (ty === "chips") bad = !$("input[type=checkbox]:checked", c);
+        else if (ty === "select") bad = !$("select", c).value;
+        else bad = !$("input, textarea", c).value.trim();
         c.toggleAttribute("data-error", bad); if (bad) ok = false;
       });
-      var bar = $("[data-vx-bar]", form), mail = $("input", bar);
+      var bar = $("[data-vx-bar]", form), mail = $("input[type=email]", bar);
       if (!/^\S+@\S+\.\S+$/.test(mail.value)) { ok = false; bar.removeAttribute("data-error"); void bar.offsetWidth; bar.setAttribute("data-error", ""); mail.placeholder = "Please enter a valid email"; }
-      if (ok) bar.setAttribute("data-sent", "");
-    });
+      if (!ok) { e.preventDefault(); e.stopImmediatePropagation(); e.stopPropagation(); }
+    }, true);
   }
 })();

@@ -112,46 +112,20 @@ html:not(.vx-live) .vx-ind_slide:first-child{opacity:1}
 .vx-tab[data-on]::after{transform:scaleX(1)}
 body[data-tab=career] .vx-tab[data-on]::after{background:#a77ff2}
 .vx-hate_link{transition:color .3s}.vx-hate_link:hover{color:#000!important}
-/* contact form (embed) */
-.vx-c-form{border-top:1px solid #e3e3e3;color:#000;font-family:"DM Sans",sans-serif}
-.vx-c-form *{box-sizing:border-box}
-.vx-c-form button,.vx-c-form input,.vx-c-form textarea{font:inherit;color:inherit;background:none;border:0;outline:none;margin:0}
-.vx-c-grid{display:grid;grid-template-columns:repeat(3,1fr)}.vx-c-grid[hidden]{display:none}
-.vx-c-cell{min-height:186px;padding:42px 40px 30px;border-right:1px solid #e3e3e3;border-bottom:1px solid #e3e3e3;position:relative}
-.vx-c-cell:nth-child(3n){border-right:0}
-.vx-c-lbl{display:block;font-family:"DM Mono",monospace;font-size:12px;line-height:16px;text-transform:uppercase;margin-bottom:12px;font-weight:400}
-.vx-c-cell input[type=text],.vx-c-cell textarea{width:100%;font-size:14px;line-height:20px;padding:0;resize:none;height:auto}
-.vx-c-cell input::placeholder,.vx-c-cell textarea::placeholder{color:#b7b7b7}
-.vx-c-cell textarea{height:80px}
-.vx-c-cell[data-error] .vx-c-lbl{color:#e04545}
-.vx-c-chips{display:flex;flex-wrap:wrap;gap:8px}
-.vx-c-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 14px 0 10px!important;border:1px solid #d4d4d4!important;border-radius:999px;font-size:14px;font-weight:500;letter-spacing:.48px;transition:background .25s,color .25s,border-color .25s;user-select:none;cursor:pointer}
-.vx-c-chip svg{width:13px;transition:transform .3s var(--vx-ease)}.vx-c-chip:hover{border-color:#000!important}
-.vx-c-chip[data-on]{background:#000;color:#fff;border-color:#000!important}.vx-c-chip[data-on] svg{transform:rotate(45deg)}
-.vx-c-dd{position:relative;display:inline-block}
-.vx-c-dd-btn{display:inline-flex;align-items:center;gap:10px;height:36px;padding:0 12px!important;border:1px solid #d4d4d4!important;font-size:14px;transition:border-color .3s;cursor:pointer}
-.vx-c-dd-btn svg{width:14px;transition:transform .3s var(--vx-ease)}.vx-c-dd-btn:hover{border-color:#000!important}
-.vx-c-dd[data-open] .vx-c-dd-btn svg{transform:rotate(180deg)}
-.vx-c-dd-list{position:absolute;left:0;top:40px;min-width:210px;background:#fff;border:1px solid #000;z-index:10;opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .25s,transform .3s var(--vx-ease)}
-.vx-c-dd[data-open] .vx-c-dd-list{opacity:1;transform:none;pointer-events:auto}
-.vx-c-dd-list button{display:block;width:100%;text-align:left;padding:6px 12px!important;font-size:12px;line-height:18px;cursor:pointer}
-.vx-c-dd-list button:hover,.vx-c-dd-list button[data-on]{background:#000;color:#fff}
-.vx-c-attach{display:inline-flex;align-items:center;gap:12px;font-size:13px;color:rgba(0,0,0,.6);cursor:pointer;margin:0;font-weight:400}
-.vx-c-attach-btn{width:24px;height:24px;border:1px solid #000;border-radius:50%;display:grid;place-items:center;transition:background .3s,color .3s,transform .4s var(--vx-ease)}
-.vx-c-attach-btn svg{width:14px}.vx-c-attach:hover .vx-c-attach-btn{background:#000;color:#fff;transform:rotate(90deg)}
-.vx-c-attach input{display:none}
-.vx-c-bar{position:relative;height:88px;background:#4e71ff;color:#fff;display:flex;align-items:center;justify-content:center;transition:background .5s var(--vx-ease)}
-body[data-tab=career] .vx-c-bar{background:#a77ff2}
-.vx-c-bar input{width:420px;max-width:50vw;text-align:center;font-size:16px;line-height:24px;color:#fff;height:auto;padding:0}
-.vx-c-bar input::placeholder{color:rgba(255,255,255,.55)}
-.vx-c-send{position:absolute;right:40px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;gap:12px;font-family:"DM Mono",monospace!important;font-size:14px;cursor:pointer;color:#fff!important}
-.vx-c-send .vx-c-circ{width:28px;height:28px;border:1px solid currentColor;border-radius:50%;display:grid;place-items:center;transition:background .3s,color .3s}
-.vx-c-send .vx-c-circ svg{width:12px}.vx-c-send:hover .vx-c-circ{background:#fff;color:#4e71ff}
-.vx-c-bar[data-error] input::placeholder{color:#fff}.vx-c-bar[data-error]{animation:vx-shake .4s}
+/* contact form (native Webflow) */
+.vx-cform_grid[hidden]{display:none}
+.vx-cform_chip{transition:background .25s,color .25s,border-color .25s;user-select:none}
+.vx-cform_chip:hover{border-color:#000}
+.vx-cform_chip[data-on]{background:#000;color:#fff;border-color:#000}
+.vx-cform_cell[data-error] .vx-cform_label{color:#e04545}
+.vx-cform_input::placeholder,.vx-cform_textarea::placeholder{color:#b7b7b7}
+.vx-cform_input:focus,.vx-cform_textarea:focus,.vx-cform_email:focus{outline:none;box-shadow:none}
+.vx-cform_select{cursor:pointer;transition:border-color .3s}.vx-cform_select:hover,.vx-cform_select:focus{border-color:#000;outline:none}
+.vx-cform_email::placeholder{color:rgba(255,255,255,.55)}
+.vx-cform_bar{transition:background .5s var(--vx-ease)}
+body[data-tab=career] .vx-cform_bar,body[data-tab=career] .vx-cform_done{background:#a77ff2}
+.vx-cform_bar[data-error] .vx-cform_email::placeholder{color:#fff}
+.vx-cform_bar[data-error]{animation:vx-shake .4s}
 @keyframes vx-shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.vx-c-ok{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"DM Mono",monospace;font-size:14px;background:inherit;opacity:0;pointer-events:none;transition:opacity .4s}
-.vx-c-bar[data-sent] .vx-c-ok{opacity:1;pointer-events:auto}
-@media (max-width:991px){.vx-c-grid{grid-template-columns:1fr 1fr}.vx-c-cell:nth-child(3n){border-right:1px solid #e3e3e3}.vx-c-cell:nth-child(2n){border-right:0}}
-@media (max-width:767px){.vx-c-cell{padding:24px 20px;min-height:140px}.vx-c-bar{flex-direction:column;height:auto;padding:18px 20px;gap:10px}.vx-c-bar input{width:100%;max-width:none}.vx-c-send{position:static;transform:none}}
-@media (max-width:479px){.vx-c-grid{grid-template-columns:1fr}.vx-c-cell{border-right:0!important}}
+.vx-cform_send{transition:opacity .3s,letter-spacing .4s var(--vx-ease);cursor:pointer}.vx-cform_send:hover{letter-spacing:.06em}
 @media (prefers-reduced-motion:reduce){.vx-brands_track{animation:none}}
