@@ -745,7 +745,8 @@ window.AWL_RUN = function (C, ATLAS) {
       }
       remap[c] = (c % 3 === 0 && images.length > 1) ? b2 : b1
     }
-    var seq = images.map(function (_, n) { return n })
+    // flying order: round-robin across websites (1st picture of each, then 2nd of each, ...) so neighbours never share a website
+    var seq = images.map(function (_, n) { return n }).sort(function (a, b) { return (images[a][1] - images[b][1]) || (images[a][0] - images[b][0]) })
     var C = {}
     for (var key in F) C[key] = F[key]
     C.projects = projects; C.images = images; C.seq = seq; C.remap = remap; C.selected = [0]
