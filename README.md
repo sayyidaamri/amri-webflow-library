@@ -8,6 +8,7 @@ dist/fonts/             Inter Tight, Instrument Serif (SIL Open Font License)
 dist/js/face.js         the portrait halftone (cell positions, depth, shading)
 dist/js/signature.js    the hand-written "Amri" line
 dist/vendor/three.min.js  three.js r158 (MIT)
+dist/js/library.js      page transitions (shards) + floating "back to library" button; load on every page
 dist/js/engine.js       three.js engine + boot: reads the hidden [data-awl-item] list on the page
 ```
 

@@ -532,6 +532,14 @@ window.AWL_RUN = function (C, ATLAS) {
     boxEl.style.height = Math.round(boxEl.getBoundingClientRect().height - (s.height - need)) + "px"
   }
   addEventListener("resize", fitBox)
+  // leaving for a website: the camera surges forward while the shards close in (library.js)
+  $("#p-link").addEventListener("click", function (e) {
+    var href = this.getAttribute("href")
+    if (!href || e.metaKey || e.ctrlKey || e.shiftKey || !window.AWL_TRANSITION) return
+    e.preventDefault()
+    closeAll(); rewind = null; target = dist + 1600
+    window.AWL_TRANSITION.go(href, e)
+  })
   function closeProject() {
     if (boxEl.dataset.view !== "project") return
     setUrl(); document.title = BASE_TITLE
