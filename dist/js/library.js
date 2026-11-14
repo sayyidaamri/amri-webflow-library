@@ -4,7 +4,7 @@
    - AWL_TRANSITION.go(url, event, { style: "shards" | "fade", delay }) covers the screen (flying shards, or a dark veil)
      and navigates; the home uses "fade" after its forward flight.
    - Arriving after such a leave, the shards burst outward (or the veil lifts) to reveal the page.
-   - On every page except the home ("/"), a floating button leads back to the library. */
+   - On every page except the home ("/"), a floating button leads back to the library (dark fade). */
 (function () {
   "use strict"
   if (window.AWL_TRANSITION) return
@@ -154,7 +154,7 @@
       '<span class="awl-home__txt"><span class="awl-home__k">Back to</span><span>Amri Webflow Library</span></span>'
     a.addEventListener("click", function (e) {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return
-      e.preventDefault(); go(HOME, e)
+      e.preventDefault(); go(HOME, e, { style: "fade" })
     })
     document.body.appendChild(a)
   }
