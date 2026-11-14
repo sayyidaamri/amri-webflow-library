@@ -84,7 +84,13 @@
   $$(".pd-item img").forEach(function (im) { if (!im.getAttribute("src")) im.closest(".pd-item").remove(); });
   $$("video[data-muted]").forEach(function (v) { v.muted = true; });
   var next = document.getElementById("pd-next");
-  if (next && !next.dataset.href) next.dataset.href = next.getAttribute("href");
+  if (next) {
+    if (!next.dataset.href) next.dataset.href = next.getAttribute("href");
+    else if (!next.getAttribute("href") || next.getAttribute("href") === "#") next.setAttribute("href", next.dataset.href);
+  }
+  var st = document.createElement("style");
+  st.textContent = "#pd-right .w-richtext+h4{margin-top:3.6vw}#pd-desc .w-richtext p+p{margin-top:1.1vw}";
+  document.head.appendChild(st);
 
   /* active menu link */
   var path = location.pathname.replace(/\/$/, "");
