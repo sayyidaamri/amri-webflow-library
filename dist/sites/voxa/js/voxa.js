@@ -360,7 +360,12 @@
       });
       var bar = $("[data-vx-bar]", form), mail = $("input[type=email]", bar);
       if (!/^\S+@\S+\.\S+$/.test(mail.value)) { ok = false; bar.removeAttribute("data-error"); void bar.offsetWidth; bar.setAttribute("data-error", ""); mail.placeholder = "Please enter a valid email"; }
-      if (!ok) { e.preventDefault(); e.stopImmediatePropagation(); e.stopPropagation(); }
+      if (!ok) {
+        e.preventDefault(); e.stopImmediatePropagation(); e.stopPropagation();
+        var first = $("[data-error]", pane) || bar;
+        first.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+        var fld = $("input:not([type=checkbox]), select, textarea", first); if (fld) setTimeout(function () { fld.focus({ preventScroll: true }); }, 400);
+      }
     }, true);
   }
 })();
