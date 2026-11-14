@@ -44,6 +44,35 @@
     if (s && !/^https?:/.test(s)) el.setAttribute("data-video", BASE + s.replace(/^assets\//, ""));
   });
 
+  /* data-split="words" -> .sw spans; data-split="aw" -> .aw spans (data-em = word indexes, e.g. "4-6,8") */
+  function words(el, own) {
+    var nodes = Array.prototype.filter.call(el.childNodes, function (n) { return n.nodeType === 3; });
+    var txt = (own ? nodes.map(function (n) { return n.textContent; }).join(" ") : el.textContent).trim();
+    if (own) nodes.forEach(function (n) { n.remove(); }); else el.textContent = "";
+    return txt.split(/\s+/).filter(Boolean);
+  }
+  $$('[data-split="words"]').forEach(function (el) {
+    words(el, false).forEach(function (w, i) {
+      if (i) el.appendChild(document.createTextNode(" "));
+      var s = document.createElement("span"); s.className = "sw"; s.textContent = w; el.appendChild(s);
+    });
+  });
+  $$('[data-split="aw"]').forEach(function (el) {
+    var em = {};
+    (el.getAttribute("data-em") || "").split(",").forEach(function (r) {
+      var m = r.split("-"), a = parseInt(m[0], 10), b = parseInt(m[1] || m[0], 10);
+      if (!isNaN(a)) for (var i = a; i <= b; i++) em[i] = 1;
+    });
+    words(el, true).forEach(function (w, i) {
+      if (i) el.appendChild(document.createTextNode(" "));
+      var s = document.createElement("span"); s.className = "aw" + (em[i] ? " is-em" : "");
+      var c = em[i] && /,$/.test(w);
+      s.appendChild(document.createTextNode(c ? w.slice(0, -1) : w));
+      if (c) { var k = document.createElement("span"); k.className = "aw__c"; k.textContent = ","; s.appendChild(k); }
+      el.appendChild(s);
+    });
+  });
+
   /* data-style -> inline style */
   $$("[data-style]").forEach(function (el) { el.style.cssText += ";" + el.getAttribute("data-style"); });
 
