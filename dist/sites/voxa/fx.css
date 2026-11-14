@@ -47,7 +47,7 @@ html.vx-live [data-vx-reveal][data-in]{opacity:1;transform:none}
 .vx-alink:hover .vx-circ_icon{transform:translateX(3px)}
 /* home intro */
 html.vx-live body.vx-home .vx-header,html.vx-live body.vx-home [data-vx-intro]{opacity:0;transition:opacity 1s var(--vx-ease)}
-body.vx-home.vx-is-ready .vx-header,body.vx-home.vx-is-ready [data-vx-intro]{opacity:1}
+html.vx-live body.vx-home.vx-is-ready .vx-header,html.vx-live body.vx-home.vx-is-ready [data-vx-intro]{opacity:1}
 body.vx-home.vx-is-ready .vx-hero_label{transition-delay:.5s}
 .vx-hero{transition:filter .6s var(--vx-ease),opacity .6s var(--vx-ease)}
 body.vx-is-focus .vx-hero{filter:blur(10px);opacity:.25}
