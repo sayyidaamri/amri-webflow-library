@@ -622,6 +622,20 @@ window.AWL_RUN = function (C, ATLAS) {
   function setMenu() {}
 
   // ---------- loading: the mark draws itself while the image sheet decodes ----------
+  // The mark used to be drawn by animating SVG masks; mobile Safari does not repaint masks whose content changes,
+  // so it froze half drawn on phones. Draw the three strokes directly instead (same look, no masks).
+  ;(function () {
+    var svg = document.querySelector(".awl-ld-mark"); if (!svg) return
+    var NS = "http://www.w3.org/2000/svg"
+    var spec = [["M11 86 L48.5 0", 18], ["M54.5 2 L81 86", 8.5], ["M19 62.5 C47.5 57.5 76.5 47 100 28.5", 8.5]]
+    while (svg.firstChild) svg.removeChild(svg.firstChild)
+    spec.forEach(function (s) {
+      var p = document.createElementNS(NS, "path")
+      p.setAttribute("class", "awl-ld-pen"); p.setAttribute("pathLength", "1"); p.setAttribute("d", s[0])
+      p.setAttribute("stroke-width", s[1]); p.style.stroke = "#f2f2f2"; p.style.strokeDashoffset = "1"
+      svg.appendChild(p)
+    })
+  })()
   var loaderEl = $("#loader"), pens = [].slice.call(document.querySelectorAll(".awl-ld-pen"))
   var LD = { target: 0.05, shown: 0, t0: performance.now(), last: performance.now(), resolve: null }
   var ldEase = function (x) { return easeIO3(Math.min(1, Math.max(0, x))) }
