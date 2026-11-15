@@ -46,7 +46,7 @@ window.AWL_RUN = function (C, ATLAS) {
   var VERT = [
     "attribute vec4 aPos; attribute vec4 aTex; attribute vec3 aMean; attribute vec4 aLook; attribute vec4 aFrom; attribute vec4 aAnim;",
     "uniform float uFog, uGrow, uIntro, uTime, uHover, uHoverPrev, uHoverT, uD0, uMote, uSoft; uniform vec2 uGrid, uTilePx;",
-    "varying vec2 vUv; varying vec2 vLocal; varying vec3 vMean; varying float vA; varying float vDepth; varying float vBias; varying float vDim; varying float vHover;",
+    "varying vec2 vUv; varying vec2 vLocal; varying vec3 vMean; varying float vA; varying float vDepth; varying float vBias; varying float vDim; varying float vHover; varying float vAsp;",
     "vec2 swirl(vec2 b, float t) { return vec2(sin(b.y * .045 + t * .35) + .6 * sin((b.x + b.y) * .03 - t * .27), cos(b.x * .045 - t * .31) + .6 * cos((b.x - b.y) * .03 + t * .23)); }",
     "void main() {",
     "  vec3 base = aPos.xyz, pos = base; float h = aPos.w, s = h, kind = aTex.z, dim = aLook.y, fill = aLook.z, a = 1.0;",
@@ -69,23 +69,24 @@ window.AWL_RUN = function (C, ATLAS) {
     "    pos.xy += swirl(pos.xy / kz, uTime + aFrom.x) * (1.0 - e) * 12.0 * kz; s = h * (1.0 - .3 * e);",
     "    dim = min(1.0, u / .3) * min(1.0, (1.0 - u) / .15) * .9; a = uMote;",
     "  }",
-    "  vec4 mv = viewMatrix * vec4(pos + vec3(position.xy * s, 0.0), 1.0);",
+    "  vec4 mv = viewMatrix * vec4(pos + vec3(vec2(position.x * (kind >= 0.5 ? 1.2 : 1.0), position.y) * s, 0.0), 1.0);",
     "  float d = -mv.z;",
     "  a *= smoothstep(s * 1.1, s * 2.6, d);",   // dissolve just before a card would fill the screen
+    "  vAsp = kind < 0.5 ? 1.3333 : 1.6;",
     "  vDepth = d; vLocal = uv; vMean = aMean; vDim = dim; vA = a;",
     "  vBias = uFog * pow(smoothstep(45.0, 1150.0, d), .75) * 5.0 + uSoft * .6;",   // depth of field from smaller mip levels
-    "  vec2 pad = .5 * exp2(vBias) / uTilePx + .002; vec2 ins = mix(pad, 1.0 - pad, uv);",
+    "  vec2 pad = .5 * exp2(vBias) / uTilePx + .002; vec2 ins = mix(pad, 1.0 - pad, uv); if (kind < 0.5) ins.x = .08333 + ins.x * .83333;",
     "  vUv = vec2((aTex.x + ins.x) / uGrid.x, 1.0 - (aTex.y + 1.0 - ins.y) / uGrid.y);",
     "  vHover = (abs(aTex.w - uHover) < .5 ? uHoverT : 0.0) + (abs(aTex.w - uHoverPrev) < .5 ? 1.0 - uHoverT : 0.0);",   // eased hover in/out
     "  gl_Position = projectionMatrix * mv;",
     "}"].join("\n")
   var FRAG = [
     "uniform sampler2D uMap; uniform float uFog, uSoft, uIn; uniform vec3 uBg;",
-    "varying vec2 vUv; varying vec2 vLocal; varying vec3 vMean; varying float vA; varying float vDepth; varying float vBias; varying float vDim; varying float vHover;",
+    "varying vec2 vUv; varying vec2 vLocal; varying vec3 vMean; varying float vA; varying float vDepth; varying float vBias; varying float vDim; varying float vHover; varying float vAsp;",
     "float ign(vec2 p) { return fract(52.9829189 * fract(dot(p, vec2(.06711056, .00583715)))); }",
     "void main() {",
     "  if (vA < .004 || (vA < .999 && ign(gl_FragCoord.xy) > vA)) discard;",       // dithered, order-free dissolve
-    "  vec2 q = abs((vLocal - .5) * vec2(1.3333, 1.0)) - vec2(.6667, .5) + .06;",
+    "  vec2 q = abs((vLocal - .5) * vec2(vAsp, 1.0)) - vec2(vAsp * .5, .5) + .06;",
     "  if (length(max(q, 0.0)) > .06) discard;",                                      // rounded corners
     "  vec3 c = mix(vMean, texture2D(uMap, vUv, vBias).rgb, uIn);",
     "  float g = dot(c, vec3(.2126, .7152, .0722));",
@@ -332,7 +333,7 @@ window.AWL_RUN = function (C, ATLAS) {
     var test = function (i) {
       var w = world[i]; if (!w.h || w.img < 0) return
       var s = screenOf(i); if (!s || s.px < MIN_CLICK_PX) return
-      if (Math.abs(pointer.x - s.x) <= s.px * 0.6667 && Math.abs(pointer.y - s.y) <= s.px * 0.5 && s.d < bd) { bd = s.d; best = i }
+      if (Math.abs(pointer.x - s.x) <= s.px * (aTex.array[i * 4 + 2] > 0.5 ? 0.8 : 0.6667) && Math.abs(pointer.y - s.y) <= s.px * 0.5 && s.d < bd) { bd = s.d; best = i }
     }
     for (var i = S0; i < M0; i++) test(i)
     for (i = 0; i < NC; i++) if (!world[i].fill && world[i].z < camera.position.z) test(i)
@@ -873,7 +874,7 @@ window.AWL_RUN = function (C, ATLAS) {
      an <a data-awl="link" href="/folder/home"> and one or more <img> (the pictures shown as cards). */
 ;(function () {
   "use strict"
-  var F = window.COSMOS_FACE, TW = 480, TH = 360, MAXCOLS = 8
+  var F = window.COSMOS_FACE, TW = 480, TH = 300, MAXCOLS = 8
   var txt = function (el, k) { var n = el.querySelector('[data-awl="' + k + '"]'); return n ? n.textContent.trim() : "" }
   var items = [].slice.call(document.querySelectorAll("[data-awl-item]"))
   var projects = items.map(function (el, pi) {
