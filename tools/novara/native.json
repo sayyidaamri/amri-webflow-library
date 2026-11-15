@@ -1420,20 +1420,11 @@
     "display": "block",
     "position": "relative",
     "aspect-ratio": "634 / 412",
-    "border-top-left-radius": "15px",
-    "border-top-right-radius": "15px",
-    "border-bottom-right-radius": "15px",
-    "border-bottom-left-radius": "15px",
     "overflow-x": "hidden",
     "overflow-y": "hidden",
     "background-color": "#d9dbe7"
    },
-   "small": {
-    "border-top-left-radius": "12px",
-    "border-top-right-radius": "12px",
-    "border-bottom-right-radius": "12px",
-    "border-bottom-left-radius": "12px"
-   },
+   "small": {},
    "hover": {},
    "small_hover": {}
   },

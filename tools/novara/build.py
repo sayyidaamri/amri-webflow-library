@@ -172,7 +172,7 @@ EX_CLASS = re.compile(r'^(snake|snake--\w+|s-\w+|news-bg|news-msg|pl-[\w-]+|tr-[
 EX_ID = re.compile(r'^(preloader|transition|video-overlay|vo-[\w-]+|scroll-indicator|reel-line|goal-line)$')
 
 # (selector, property) that must stay in fx because an fx rule relied on losing to it by specificity
-KEEP_FX = {('#menu', 'pointer-events')}
+KEEP_FX = {('#menu', 'pointer-events'), ('.pi-media', 'border-radius')}
 
 def target_for(sel):
     """selector part -> (chain, style_name, pseudo) or None"""
