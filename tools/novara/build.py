@@ -231,8 +231,9 @@ def handle(rule, media):
                 if d.important or FX_PROPS.match(d.lower_name) or (p, d.lower_name) in KEEP_FX:
                     rest.append(f'{d.name}:{val}{" !important" if d.important else ""}')
                     continue
-                nv = native_value(val)
-                ex = expand(d.lower_name, val) if nv is not None else None
+                ex = expand(d.lower_name, val)
+                if ex is not None and any(native_value(v) is None for _, v in ex):
+                    ex = None  # judge each longhand part, not the shorthand string
                 if ex is None:
                     rest.append(f'{d.name}:{val}')
                     continue

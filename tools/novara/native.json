@@ -241,7 +241,11 @@
    "chain": [],
    "style": "nv-section",
    "base": {
-    "position": "relative"
+    "position": "relative",
+    "padding-top": "var(--_nv---nv-py)",
+    "padding-right": "var(--_nv---nv-px)",
+    "padding-bottom": "var(--_nv---nv-py)",
+    "padding-left": "var(--_nv---nv-px)"
    },
    "small": {},
    "hover": {},
@@ -281,6 +285,10 @@
     "left": "0",
     "right": "0",
     "height": "0",
+    "padding-top": "0",
+    "padding-right": "var(--_nv---nv-px)",
+    "padding-bottom": "0",
+    "padding-left": "var(--_nv---nv-px)",
     "pointer-events": "none"
    },
    "small": {},
@@ -2117,6 +2125,10 @@
     "color": "#000",
     "height": "100vh",
     "min-height": "560px",
+    "padding-top": "var(--_nv---nv-py)",
+    "padding-right": "var(--_nv---nv-px)",
+    "padding-bottom": "var(--_nv---nv-py)",
+    "padding-left": "var(--_nv---nv-px)",
     "display": "flex",
     "flex-direction": "column",
     "justify-content": "flex-end",
@@ -2284,6 +2296,10 @@
     "z-index": "5",
     "background-color": "var(--_nv---nv-nav-bg)",
     "color": "#fff",
+    "padding-top": "var(--_nv---nv-py)",
+    "padding-right": "var(--_nv---nv-px)",
+    "padding-bottom": "var(--_nv---nv-py)",
+    "padding-left": "var(--_nv---nv-px)",
     "height": "313px",
     "text-transform": "uppercase"
    },
@@ -3594,7 +3610,11 @@
    "small": {
     "position": "relative",
     "left": "0",
-    "width": "auto"
+    "width": "auto",
+    "padding-top": "120px",
+    "padding-right": "var(--_nv---nv-px)",
+    "padding-bottom": "0",
+    "padding-left": "var(--_nv---nv-px)"
    },
    "hover": {},
    "small_hover": {}
@@ -3713,6 +3733,10 @@
     "top": "0",
     "height": "auto",
     "flex-direction": "column",
+    "padding-top": "12vw",
+    "padding-right": "var(--_nv---nv-px)",
+    "padding-bottom": "0",
+    "padding-left": "var(--_nv---nv-px)",
     "grid-row-gap": "4vw",
     "grid-column-gap": "4vw",
     "cursor": "auto"
@@ -3765,6 +3789,10 @@
     "margin-right": "0",
     "background-color": "var(--_nv---nv-off-white)",
     "color": "#000",
+    "padding-top": "var(--_nv---nv-py)",
+    "padding-right": "var(--_nv---nv-px)",
+    "padding-bottom": "var(--_nv---nv-py)",
+    "padding-left": "var(--_nv---nv-px)",
     "overflow-x": "hidden",
     "overflow-y": "hidden"
    },
