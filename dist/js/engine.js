@@ -619,9 +619,9 @@ window.AWL_RUN = function (C, ATLAS) {
   var HEX = /^#[0-9a-f]{6}$/i, genRole = ""
   var G = function (id) { return document.getElementById("gen-" + id) }
   function genShown() { return !!gen && !gen.hidden }
-  function genEsc() { if (!G("pal").hidden) closePal(); else closeGen() }
+  function genEsc() { if (cpOpen()) closePal(); else closeGen() }
   function closeGen() { if (!gen) return; gen.hidden = true; closePal() }
-  function closePal() { genRole = ""; G("pal").hidden = true; gen.querySelectorAll(".awl-dot").forEach(function (d) { d.classList.remove("on") }) }
+  function closePal() { genRole = ""; if (CP.el) CP.el.hidden = true; if (gen) gen.querySelectorAll(".awl-dot").forEach(function (d) { d.classList.remove("on") }) }
   function genSync() {
     var ok = !!GEN.tech && G("brief").value.trim().length >= 30 && ROLES.every(function (r) { return HEX.test(GEN.colors[r[0]] || "") })
     G("go").disabled = !ok; G("hint").hidden = ok
@@ -631,14 +631,88 @@ window.AWL_RUN = function (C, ATLAS) {
     var d = gen.querySelector('.awl-dot[data-role="' + role + '"]'); d.style.background = hex; d.classList.add("set")
     genSync()
   }
+  // ---------- colour picker (floating modal: saturation/brightness area, hue, hex, RGB, presets) ----------
+  var CP = { el: null, h: 210, s: 1, v: 1 }
+  function cpOpen() { return !!CP.el && !CP.el.hidden }
+  function hsv2rgb(h, s, v) {
+    var f = function (n) { var k = (n + h / 60) % 6; return v - v * s * Math.max(0, Math.min(k, 4 - k, 1)) }
+    return [Math.round(f(5) * 255), Math.round(f(3) * 255), Math.round(f(1) * 255)]
+  }
+  function rgb2hex(r, g, b) { return "#" + [r, g, b].map(function (x) { return ("0" + Math.max(0, Math.min(255, x | 0)).toString(16)).slice(-2) }).join("") }
+  function hex2hsv(hex) {
+    var r = parseInt(hex.substr(1, 2), 16) / 255, g = parseInt(hex.substr(3, 2), 16) / 255, b = parseInt(hex.substr(5, 2), 16) / 255
+    var mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn, h = 0
+    if (d) h = mx === r ? ((g - b) / d + 6) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4
+    return { h: h * 60, s: mx ? d / mx : 0, v: mx }
+  }
+  function cpHex() { var c = hsv2rgb(CP.h, CP.s, CP.v); return rgb2hex(c[0], c[1], c[2]) }
+  function cpRender(skip) {
+    var c = hsv2rgb(CP.h, CP.s, CP.v), hex = rgb2hex(c[0], c[1], c[2]), q = function (x) { return CP.el.querySelector(x) }
+    q(".awl-cp-sv").style.background = "linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,hsl(" + CP.h + ",100%,50%))"
+    var k = q(".awl-cp-knob"); k.style.left = CP.s * 100 + "%"; k.style.top = (1 - CP.v) * 100 + "%"; k.style.background = hex
+    q(".awl-cp-hue-k").style.left = CP.h / 360 * 100 + "%"; q(".awl-cp-hue-k").style.background = "hsl(" + CP.h + ",100%,50%)"
+    q(".awl-cp-prev").style.background = hex
+    if (skip !== "hex") q(".awl-cp-hex").value = hex
+    if (skip !== "rgb") { var r = q(".awl-cp-rgb").querySelectorAll("input"); r[0].value = c[0]; r[1].value = c[1]; r[2].value = c[2] }
+    CP.el.querySelectorAll(".awl-sw").forEach(function (b) { b.classList.toggle("on", b.dataset.c === hex) })
+    if (genRole) setColor(genRole, hex)
+  }
+  function cpDrag(el, fn) {
+    el.addEventListener("pointerdown", function (e) {
+      e.preventDefault(); e.stopPropagation(); el.setPointerCapture(e.pointerId)
+      var r = el.getBoundingClientRect(), mv = function (ev) { fn(Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)), Math.max(0, Math.min(1, (ev.clientY - r.top) / r.height))) }
+      mv(e)
+      var up = function () { el.removeEventListener("pointermove", mv); el.removeEventListener("pointerup", up); el.removeEventListener("pointercancel", up) }
+      el.addEventListener("pointermove", mv); el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up)
+    })
+  }
+  function cpBuild() {
+    var el = document.createElement("div"); el.className = "awl-cp-wrap"; el.hidden = true
+    el.innerHTML = '<div class="awl-cp" role="dialog" aria-modal="true" aria-label="Pick a color">' +
+      '<div class="awl-cp-head"><span class="awl-cp-title"></span><button type="button" class="awl-cp-x" aria-label="Close">&times;</button></div>' +
+      '<div class="awl-cp-sv"><i class="awl-cp-knob"></i></div>' +
+      '<div class="awl-cp-row"><span class="awl-cp-prev"></span><div class="awl-cp-hue"><i class="awl-cp-hue-k"></i></div><button type="button" class="awl-cp-eye" aria-label="Pick from screen" hidden>' +
+      '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 2.5l3 3-2 2-3-3zM8.5 4.5l-5 5v3h3l5-5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button></div>' +
+      '<div class="awl-cp-fields"><label>HEX<input class="awl-cp-hex" type="text" maxlength="7" spellcheck="false" autocomplete="off"></label>' +
+      '<div class="awl-cp-rgb"><label>R<input type="number" min="0" max="255"></label><label>G<input type="number" min="0" max="255"></label><label>B<input type="number" min="0" max="255"></label></div></div>' +
+      '<div class="awl-cp-sws">' + SWATCHES.map(function (c) { return '<button type="button" class="awl-sw" data-c="' + c + '" style="background:' + c + '" aria-label="' + c + '"></button>' }).join("") + '</div>' +
+      '<button type="button" class="awl-gen-go awl-cp-done">Done</button></div>'
+    gen.appendChild(el); CP.el = el
+    var q = function (x) { return el.querySelector(x) }
+    cpDrag(q(".awl-cp-sv"), function (x, y) { CP.s = x; CP.v = 1 - y; cpRender() })
+    cpDrag(q(".awl-cp-hue"), function (x) { CP.h = x * 360; cpRender() })
+    q(".awl-cp-hex").addEventListener("input", function () {
+      var v = this.value.trim(); if (v && v[0] !== "#") v = "#" + v
+      if (HEX.test(v)) { var o = hex2hsv(v); CP.h = o.s && o.v ? o.h : CP.h; CP.s = o.s; CP.v = o.v; cpRender("hex") }
+    })
+    q(".awl-cp-rgb").addEventListener("input", function () {
+      var r = this.querySelectorAll("input"), v = rgb2hex(+r[0].value || 0, +r[1].value || 0, +r[2].value || 0), o = hex2hsv(v)
+      CP.h = o.s && o.v ? o.h : CP.h; CP.s = o.s; CP.v = o.v; cpRender("rgb")
+    })
+    el.addEventListener("click", function (e) {
+      e.stopPropagation()
+      var t = e.target
+      if (t === el || t.closest(".awl-cp-x") || t.closest(".awl-cp-done")) return closePal()
+      var sw = t.closest(".awl-sw"); if (sw) { var o = hex2hsv(sw.dataset.c); CP.h = o.s && o.v ? o.h : CP.h; CP.s = o.s; CP.v = o.v; cpRender() }
+    })
+    if (window.EyeDropper) {
+      var eye = q(".awl-cp-eye"); eye.hidden = false
+      eye.addEventListener("click", function () {
+        new window.EyeDropper().open().then(function (r) { var o = hex2hsv(r.sRGBHex); CP.h = o.s && o.v ? o.h : CP.h; CP.s = o.s; CP.v = o.v; cpRender() }).catch(function () {})
+      })
+    }
+  }
   function openPal(role) {
+    if (!CP.el) cpBuild()
     genRole = role
     gen.querySelectorAll(".awl-dot").forEach(function (d) { d.classList.toggle("on", d.dataset.role === role) })
     var cur = GEN.colors[role] || "", label = ROLES.filter(function (r) { return r[0] === role })[0][1]
-    G("pal-t").textContent = label + " color"
-    G("grid").querySelectorAll("button").forEach(function (b) { b.classList.toggle("on", b.dataset.c === cur) })
-    G("hex").value = cur; if (cur) G("color").value = cur
-    G("pal").hidden = false
+    CP.el.querySelector(".awl-cp-title").textContent = label + " color"
+    var o = hex2hsv(HEX.test(cur) ? cur : "#2563eb"); CP.h = o.h; CP.s = o.s; CP.v = o.v
+    CP.el.hidden = false
+    // show current values without committing an empty circle
+    var keep = genRole; genRole = ""; cpRender(); genRole = keep
+    setTimeout(function () { var f = CP.el.querySelector(".awl-cp-hex"); if (f && !("ontouchstart" in window)) f.focus({ preventScroll: true }) }, 40)
   }
   function openGen() {
     var p = GEN.p; if (!gen || !p || !p.repo) return
@@ -675,7 +749,7 @@ window.AWL_RUN = function (C, ATLAS) {
     setTimeout(function () { URL.revokeObjectURL(url) }, 1500)
   }
   if (gen && genBtn) {
-    G("grid").innerHTML = SWATCHES.map(function (c) { return '<button type="button" class="awl-sw" data-c="' + c + '" style="background:' + c + '" aria-label="' + c + '"></button>' }).join("")
+    var oldPal = G("pal"); if (oldPal) oldPal.remove()
     genBtn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); openGen() })
     gen.addEventListener("click", function (e) {
       var t = e.target
@@ -686,23 +760,16 @@ window.AWL_RUN = function (C, ATLAS) {
         gen.querySelectorAll(".awl-pill").forEach(function (b) { var on = b === pill; b.classList.toggle("on", on); b.setAttribute("aria-checked", on ? "true" : "false") })
         return genSync()
       }
-      var dot = t.closest(".awl-dot"); if (dot) return genRole === dot.dataset.role ? closePal() : openPal(dot.dataset.role)
-      var sw = t.closest(".awl-sw"); if (sw && genRole) { setColor(genRole, sw.dataset.c); return closePal() }
-      if (t.closest("#gen-pal-done")) return closePal()
+      var dot = t.closest(".awl-dot"); if (dot) return openPal(dot.dataset.role)
       if (t.closest("#gen-go")) return genBuild()
       if (t.closest("#gen-edit")) { G("out").hidden = true; G("form").hidden = false; return }
       if (t.closest("#gen-cp")) return genCopy()
       if (t.closest("#gen-dl")) return genDownload()
     }, true)
     G("brief").addEventListener("input", genSync)
-    G("color").addEventListener("input", function () { if (genRole) { setColor(genRole, this.value); G("hex").value = this.value.toLowerCase() } })
-    G("hex").addEventListener("input", function () {
-      var v = this.value.trim(); if (v && v[0] !== "#") v = "#" + v
-      if (genRole && HEX.test(v)) { setColor(genRole, v); G("color").value = v.toLowerCase() }
-    })
     gen.addEventListener("keydown", function (e) {
       if (e.key !== "Tab") return
-      var f = [].slice.call(gen.querySelectorAll("button:not(:disabled), textarea, input")).filter(function (x) { return x.offsetParent !== null })
+      var f = [].slice.call((cpOpen() ? CP.el : gen).querySelectorAll("button:not(:disabled), textarea, input")).filter(function (x) { return x.offsetParent !== null })
       if (!f.length) return
       var first = f[0], last = f[f.length - 1]
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }

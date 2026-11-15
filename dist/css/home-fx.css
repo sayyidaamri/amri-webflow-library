@@ -38,3 +38,28 @@
 .awl-gen-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .awl-gen #gen-text{min-height:260px;font-family:monospace;font-size:12px}
 @media(max-width:991px){.awl-gen-card{padding:22px 16px 18px}.awl-grid{grid-template-columns:repeat(6,1fr)}}
+
+.awl-pal{display:none!important}
+.awl-cp-wrap{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.45)}
+.awl-cp-wrap[hidden]{display:none}
+.awl-cp{width:min(300px,100%);max-height:100%;overflow:auto;background:#17171a;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:14px;box-shadow:0 24px 60px rgba(0,0,0,.55)}
+.awl-cp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:13px;font-weight:600}
+.awl-cp-x{width:26px;height:26px;border-radius:50%;border:0;background:rgba(255,255,255,.08);color:inherit;font-size:16px;line-height:1;cursor:pointer}
+.awl-cp-sv{position:relative;width:100%;aspect-ratio:4/3;border-radius:10px;cursor:crosshair;touch-action:none;user-select:none}
+.awl-cp-knob{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.5);pointer-events:none}
+.awl-cp-row{display:flex;align-items:center;gap:10px;margin:12px 0}
+.awl-cp-prev{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.25)}
+.awl-cp-hue{position:relative;flex:1;height:12px;border-radius:6px;cursor:pointer;touch-action:none;user-select:none;background:linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
+.awl-cp-hue-k{position:absolute;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.5);pointer-events:none}
+.awl-cp-eye{flex:none;width:30px;height:30px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:transparent;color:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.awl-cp-eye[hidden]{display:none}
+.awl-cp-fields{display:flex;gap:8px;margin-bottom:12px}
+.awl-cp-fields label{display:flex;flex-direction:column;gap:4px;font-size:10px;letter-spacing:.06em;opacity:.8}
+.awl-cp-fields>label{flex:1.5}
+.awl-cp-rgb{display:flex;gap:6px;flex:3}
+.awl-cp-rgb label{flex:1;min-width:0}
+.awl-cp-fields input{width:100%;min-width:0;padding:7px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);color:#f2f2f2;font:inherit;font-size:12px;font-family:monospace;text-transform:uppercase}
+.awl-cp-fields input[type=number]{text-transform:none;-moz-appearance:textfield}
+.awl-cp-fields input::-webkit-outer-spin-button,.awl-cp-fields input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.awl-cp-sws{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px}
+.awl-cp-done{padding:10px 16px}
