@@ -77,7 +77,7 @@ THEME_OK = {'--fg', '--bg', '--accent'}  # defined in fx :root / body, kept as v
 
 FX_PROPS = re.compile(r'^(transition|transform|opacity|filter|backdrop-filter|-webkit-backdrop-filter|will-change|animation|'
                       r'mix-blend-mode|clip-path|mask|-webkit-mask|content|vector-effect|stroke|fill|scrollbar|'
-                      r'-webkit-|perspective|backface|transform-style|transform-origin|font-feature|touch-action|user-select|isolation)')
+                      r'-webkit-|perspective|backface|transform-style|transform-origin|font-feature|touch-action|user-select|isolation|--)')
 
 def expand(name, val):
     """shorthand -> longhands Webflow understands; None = not native"""
