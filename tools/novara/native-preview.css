@@ -17,7 +17,7 @@
 .nv-pill.is-light.is-menu-btn{padding-top:0;padding-right:15.75px;padding-bottom:0;padding-left:22.75px}
 .nv-menu-btn-labels{position:relative;display:block;height:17px;overflow-x:hidden;overflow-y:hidden}
 .nv-menu-btn-dots{position:relative;width:16px;height:16px;margin-left:10px}
-.nv-menu{position:absolute;right:var(--_nv---nv-px);top:calc(var(--_nv---nv-py) + 58px);width:310px;display:flex;flex-direction:column;grid-row-gap:10px;grid-column-gap:10px;pointer-events:none}
+.nv-menu{position:absolute;right:var(--_nv---nv-px);top:calc(var(--_nv---nv-py) + 58px);width:310px;display:flex;flex-direction:column;grid-row-gap:10px;grid-column-gap:10px}
 .nv-menu-card{display:block;background-color:#fff;border-top-left-radius:10px;border-top-right-radius:10px;border-bottom-right-radius:10px;border-bottom-left-radius:10px}
 .nv-menu-card.nv-menu-links{padding-top:16px;padding-right:5px;padding-bottom:16px;padding-left:5px}
 .nv-menu-link{position:relative;display:flex;align-items:center;padding-top:16px;padding-right:26px;padding-bottom:16px;padding-left:26px;font-size:26px;line-height:26px;text-transform:uppercase;color:#000}
@@ -57,7 +57,7 @@
 .nv-reel-deco.is-top{top:-29px}
 .nv-reel-deco.is-bottom{bottom:-29px}
 .nv-reel-marquee{position:absolute;top:0;right:0;bottom:0;left:0;overflow-x:hidden;overflow-y:hidden;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap;line-height:14px}
-.nv-reel-play{position:absolute;left:0;top:0;display:flex;align-items:center;grid-row-gap:calc(1.6vw + var(--_nv---nv-gap, 0) * 13vw);grid-column-gap:calc(1.6vw + var(--_nv---nv-gap, 0) * 13vw);color:#fff;font-size:7.5vw;line-height:1;text-transform:uppercase;white-space:nowrap;z-index:2;pointer-events:none}
+.nv-reel-play{position:absolute;left:0;top:0;display:flex;align-items:center;grid-row-gap:1.6vw;grid-column-gap:1.6vw;color:#fff;font-size:7.5vw;line-height:1;text-transform:uppercase;white-space:nowrap;z-index:2;pointer-events:none}
 .nv-rp-word{display:block;overflow-x:hidden;overflow-y:hidden}
 .nv-reel-btn{position:relative;width:9.2vw;height:5.4vw;border-top-left-radius:99px;border-top-right-radius:99px;border-bottom-right-radius:99px;border-bottom-left-radius:99px;background-color:#fff;color:#000;display:grid;align-items:center;justify-items:center;overflow-x:hidden;overflow-y:hidden}
 .nv-section.is-featured{padding-bottom:9vw}

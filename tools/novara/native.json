@@ -609,8 +609,7 @@
     "display": "flex",
     "flex-direction": "column",
     "grid-row-gap": "10px",
-    "grid-column-gap": "10px",
-    "pointer-events": "none"
+    "grid-column-gap": "10px"
    },
    "small": {
     "position": "fixed",
@@ -1254,8 +1253,8 @@
     "top": "0",
     "display": "flex",
     "align-items": "center",
-    "grid-row-gap": "calc(1.6vw + var(--_nv---nv-gap, 0) * 13vw)",
-    "grid-column-gap": "calc(1.6vw + var(--_nv---nv-gap, 0) * 13vw)",
+    "grid-row-gap": "1.6vw",
+    "grid-column-gap": "1.6vw",
     "color": "#fff",
     "font-size": "7.5vw",
     "line-height": "1",

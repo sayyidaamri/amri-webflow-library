@@ -148,6 +148,8 @@ def split_ws(v):
 
 def native_value(val):
     """returns value with token vars mapped, or None if it uses runtime vars"""
+    if re.search(r'var\(--[\w-]+\s*,', val):
+        return None  # var with fallback = runtime var set by JS (e.g. #reel-play --gap)
     used = re.findall(r'var\((--[\w-]+)', val)
     for u in used:
         if u not in TOK and u not in THEME_OK:
@@ -168,6 +170,9 @@ SIMPLE_ID = re.compile(r'^#([\w-]+)(:hover)?$')
 # kept in fx: classes without a Webflow style (svg/embed markup) and ids inside embeds
 EX_CLASS = re.compile(r'^(snake|snake--\w+|s-\w+|news-bg|news-msg|pl-[\w-]+|tr-[\w-]+|glyph|g[123])$')
 EX_ID = re.compile(r'^(preloader|transition|video-overlay|vo-[\w-]+|scroll-indicator|reel-line|goal-line)$')
+
+# (selector, property) that must stay in fx because an fx rule relied on losing to it by specificity
+KEEP_FX = {('#menu', 'pointer-events')}
 
 def target_for(sel):
     """selector part -> (chain, style_name, pseudo) or None"""
@@ -220,7 +225,7 @@ def handle(rule, media):
                 tgt = None
             for d in decls:
                 val = ser(d.value)
-                if d.important or FX_PROPS.match(d.lower_name):
+                if d.important or FX_PROPS.match(d.lower_name) or (p, d.lower_name) in KEEP_FX:
                     rest.append(f'{d.name}:{val}{" !important" if d.important else ""}')
                     continue
                 nv = native_value(val)
