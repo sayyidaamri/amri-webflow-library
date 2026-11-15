@@ -151,6 +151,9 @@ def native_value(val):
     if re.search(r'var\(--[\w-]+\s*,', val):
         return None  # var with fallback = runtime var set by JS (e.g. #reel-play --gap)
     used = re.findall(r'var\((--[\w-]+)', val)
+    # Webflow stores only a bare variable reference: calc(var(--x) + 6px) collapses to var(--x). Keep mixed values in fx.
+    if used and not (len(used) == 1 and re.fullmatch(r'\s*var\(--[\w-]+\)\s*', val) and used[0] in TOK):
+        return None
     for u in used:
         if u not in TOK and u not in THEME_OK:
             return None
