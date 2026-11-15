@@ -17,3 +17,12 @@ function ncPrep() {
   document.querySelectorAll("[data-nc-hidden]").forEach(function (e) { e.hidden = true; e.removeAttribute("data-nc-hidden"); });
   document.querySelectorAll("[data-nc-src]").forEach(function (e) { e.setAttribute("src", NCB + e.getAttribute("data-nc-src")); e.removeAttribute("data-nc-src"); });
 }
+/* Studio / contact pages: header links go to real pages, sound toggle hidden. */
+function ncSubpage() {
+  var go = function (id, href) { var a = document.getElementById(id); if (a) a.setAttribute("href", href); };
+  go("brandHome", "/noctelle/home"); go("introOpenBtn", "/noctelle/studio"); go("projectsMenuBtn", "/noctelle/home");
+  document.querySelectorAll("#projectsDropdownMenu a").forEach(function (a) { a.setAttribute("href", "/noctelle/home"); });
+  var st = document.createElement("style"); st.textContent = "body{cursor:auto}"; document.body.appendChild(st);
+  var s = document.getElementById("soundToggle");
+  if (s && s.parentNode) { var li = s.parentNode, sep = li.previousElementSibling; li.style.display = "none"; if (sep) sep.style.display = "none"; }
+}

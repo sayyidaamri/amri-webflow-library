@@ -265,8 +265,8 @@ print('classes', len(classmap), 'native rules', len(native), 'fx bytes', len(fx_
 
 # ---------- bundle ----------
 data = open('/home/claude/nc-build/data-en.js').read().replace('"__NC_BASE__', 'NCB + "')
-prelude = open('/home/claude/nc-build/prelude.js').read()
-bundle = prelude + '\nif (document.getElementById("page-1")) {\nncPrep();\n' + data + '\n' + pf2 + '\n' + app2 + '\n}\n'
+prelude = open('/home/claude/amri-webflow-library/tools/noctelle/prelude.js').read()
+bundle = prelude + '\nif (document.getElementById("page-1")) {\nncPrep();\n' + data + '\n' + pf2 + '\n' + app2 + '\n} else { ncPrep(); ncSubpage(); }\n'
 open(f'{OUT}/noctelle.js', 'w').write(bundle)
 
 # ---------- local test page ----------
