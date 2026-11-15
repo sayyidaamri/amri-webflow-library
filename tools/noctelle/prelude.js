@@ -22,7 +22,7 @@ function ncPrep() {
 function ncSubpage() {
   var go = function (id, href) { var a = document.getElementById(id); if (a) a.setAttribute("href", href); };
   go("brandHome", "/noctelle/home"); go("introOpenBtn", "/noctelle/studio"); go("projectsMenuBtn", "/noctelle/home");
-  document.querySelectorAll("#projectsDropdownMenu a").forEach(function (a) { a.setAttribute("href", "/noctelle/home"); });
+  document.querySelectorAll("#projectsDropdownMenu a[data-node]").forEach(function (a) { a.setAttribute("href", "/noctelle/home"); });
   var st = document.createElement("style");
   st.textContent = ".nc-nav{background:rgba(0,0,0,.82);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid rgba(212,184,122,.14)}";
   document.body.appendChild(st);
