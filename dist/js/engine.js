@@ -6,6 +6,10 @@
    end: down the middle comes the work in order ("the lane"), around it a tunnel of other pieces ("the stream").
    Cards close enough can be clicked; they open in the glass box on the left.
    Data: assets/data/cosmos.js (built by tools/build.py). Plain script, no modules, so it runs from file://. */
+(function () {
+  var s = (document.currentScript && document.currentScript.src) || "", m = s.match(/^(.*\/)dist\/js\/engine\.js/)
+  window.AWL_BASE = m ? m[1] : "https://cdn.jsdelivr.net/gh/sayyidaamri/amri-webflow-library@main/"
+})()
 window.AWL_RUN = function (C, ATLAS) {
   "use strict"
   var SITE = window.SITE || {}, THREE = window.THREE
@@ -281,12 +285,12 @@ window.AWL_RUN = function (C, ATLAS) {
     target = Math.max(0, target + dy)
   }
   addEventListener("wheel", function (e) {
-    if (e.target.closest && (e.target.closest(".awl-box") || e.target.closest(".mnav"))) return
+    if (e.target.closest && (e.target.closest(".awl-box") || e.target.closest(".awl-gen") || e.target.closest(".mnav"))) return
     e.preventDefault()
     push(e.deltaY * (e.deltaMode === 1 ? 32 : e.deltaMode === 2 ? innerHeight : 1) * SPEED)
   }, { passive: false })
   var ty = null, tt = 0
-  addEventListener("touchstart", function (e) { ty = e.target.closest && (e.target.closest(".awl-box") || e.target.closest(".mnav")) ? null : e.touches[0].clientY; tt = performance.now(); vel = 0 }, { passive: true })
+  addEventListener("touchstart", function (e) { ty = e.target.closest && (e.target.closest(".awl-box") || e.target.closest(".awl-gen") || e.target.closest(".mnav")) ? null : e.touches[0].clientY; tt = performance.now(); vel = 0 }, { passive: true })
   addEventListener("touchmove", function (e) {
     if (ty === null) return
     e.preventDefault()
@@ -296,7 +300,7 @@ window.AWL_RUN = function (C, ATLAS) {
   addEventListener("touchend", function () { ty = null })
   addEventListener("keydown", function (e) {
     var ae = document.activeElement
-    if (ae && ae.closest && ae.closest(".awl-p-scroll, input, textarea, select")) return
+    if (ae && ae.closest && ae.closest(".awl-p-scroll, .awl-gen, input, textarea, select")) return
     var step = { ArrowDown: 160, PageDown: 600, " ": 600, ArrowUp: -160, PageUp: -600 }[e.key]
     if (step) { e.preventDefault(); push(step) }
     if (e.key === "Home") backToPortrait()
@@ -491,7 +495,7 @@ window.AWL_RUN = function (C, ATLAS) {
 
   // ---------- the box ----------
   var gallery = $("#p-gallery"), stageEl = $("#p-stage"), scrollEl = $("#p-scroll"), body = document.body
-  var BASE_TITLE = document.title, openId = "", sideView = ""
+  var BASE_TITLE = document.title, openId = "", sideView = "", GEN = { p: null, tech: "", colors: {} }
   function setView(v) {
     if (boxEl.dataset.view !== v) boxEl.dataset.view = v
     body.classList.toggle("boxed", v !== "closed")
@@ -505,7 +509,8 @@ window.AWL_RUN = function (C, ATLAS) {
   function openProject(pi, mi, tile) {
     var p = C.projects[pi], m = p.m[mi] || p.m[0]
     openId = workId(pi, mi); setUrl("work", openId); document.title = p.t + " · " + (SITE.name || "Amri Sayyida")
-    var cb = $("#p-copy"); cb.classList.remove("done"); cb.lastElementChild.textContent = "Copy link"
+    var gb = $("#p-gen"); if (gb) gb.hidden = !p.repo
+    GEN.p = p
     closeAcc = 0; sideView = ""
     $("#p-src").textContent = p.k || ""
     $("#p-title").textContent = p.t
@@ -568,13 +573,13 @@ window.AWL_RUN = function (C, ATLAS) {
     if (v === "contact") { resetForm(); setTimeout(function () { if (W > 991) cform.elements.name.focus({ preventScroll: true }) }, 450) }
   }
   function closeSide() { if (sideView) { sideView = ""; setView("closed") } }
-  function closeAll() { closeProject(); closeSide() }
+  function closeAll() { closeGen(); closeProject(); closeSide() }
   function toggleSide(v) { if (sideView === v) closeSide(); else openSide(v) }
   boxEl.addEventListener("click", function (e) {
     if (e.target.closest("[data-close]")) closeProject()
     if (e.target.closest("[data-about-close]")) closeSide()
   })
-  addEventListener("keydown", function (e) { if (e.key === "Escape") { closeAll(); setMenu(false) } })
+  addEventListener("keydown", function (e) { if (e.key === "Escape") { if (genShown()) { genEsc(); return } closeAll(); setMenu(false) } })
   function flyIn() { closeAll(); if (dist < 200) target = Math.max(target, 420) }
   $("#work-open").addEventListener("click", flyIn)
   $("#start").addEventListener("click", flyIn)
@@ -607,14 +612,103 @@ window.AWL_RUN = function (C, ATLAS) {
     var ok = false; try { ok = document.execCommand("copy") } catch (e) {}
     t.remove(); return ok
   }
-  $("#p-copy").addEventListener("click", function (e) {
-    e.preventDefault(); e.stopPropagation()
-    var b = $("#p-copy"), url = location.href.split("?")[0].split("#")[0] + "?work=" + openId
-    var ok = function () { b.classList.add("done"); b.lastElementChild.textContent = "Link copied"; showToast("Link copied"); setTimeout(function () { b.classList.remove("done"); b.lastElementChild.textContent = "Copy link" }, 2000) }
-    if (copySync(url)) return ok()
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(ok, function () { prompt("Copy this link", url) })
-    else prompt("Copy this link", url)
-  })
+  // ---------- generate a prompt (a second modal on top of the box) ----------
+  var gen = $("#gen"), genBtn = $("#p-gen")
+  var ROLES = [["background", "Background"], ["text", "Text"], ["primary", "Primary"], ["secondary", "Secondary"]]
+  var SWATCHES = ["#0a0a0b", "#f2f2f2", "#ffffff", "#1e293b", "#2563eb", "#7c3aed", "#db2777", "#dc2626", "#ea580c", "#facc15", "#16a34a", "#0d9488"]
+  var HEX = /^#[0-9a-f]{6}$/i, genRole = ""
+  var G = function (id) { return document.getElementById("gen-" + id) }
+  function genShown() { return !!gen && !gen.hidden }
+  function genEsc() { if (!G("pal").hidden) closePal(); else closeGen() }
+  function closeGen() { if (!gen) return; gen.hidden = true; closePal() }
+  function closePal() { genRole = ""; G("pal").hidden = true; gen.querySelectorAll(".awl-dot").forEach(function (d) { d.classList.remove("on") }) }
+  function genSync() {
+    var ok = !!GEN.tech && G("brief").value.trim().length >= 30 && ROLES.every(function (r) { return HEX.test(GEN.colors[r[0]] || "") })
+    G("go").disabled = !ok; G("hint").hidden = ok
+  }
+  function setColor(role, hex) {
+    hex = hex.toLowerCase(); GEN.colors[role] = hex
+    var d = gen.querySelector('.awl-dot[data-role="' + role + '"]'); d.style.background = hex; d.classList.add("set")
+    genSync()
+  }
+  function openPal(role) {
+    genRole = role
+    gen.querySelectorAll(".awl-dot").forEach(function (d) { d.classList.toggle("on", d.dataset.role === role) })
+    var cur = GEN.colors[role] || "", label = ROLES.filter(function (r) { return r[0] === role })[0][1]
+    G("pal-t").textContent = label + " color"
+    G("grid").querySelectorAll("button").forEach(function (b) { b.classList.toggle("on", b.dataset.c === cur) })
+    G("hex").value = cur; if (cur) G("color").value = cur
+    G("pal").hidden = false
+  }
+  function openGen() {
+    var p = GEN.p; if (!gen || !p || !p.repo) return
+    G("site").textContent = p.t; G("form").hidden = false; G("out").hidden = true; G("err").hidden = true
+    gen.hidden = false; genSync()
+    setTimeout(function () { var f = gen.querySelector(".awl-pill"); if (f) f.focus({ preventScroll: true }) }, 60)
+  }
+  function genBuild() {
+    var p = GEN.p, t = GEN.tech, base = window.AWL_BASE, go = G("go")
+    go.disabled = true; go.textContent = "Generating…"; G("err").hidden = true
+    fetch(base + "dist/prompts/" + t + ".md").then(function (r) { if (!r.ok) throw new Error("template"); return r.text() }).then(function (tpl) {
+      var map = {
+        site_title: p.t, slug: p.id, repo_url: p.repo, brief: G("brief").value.trim(),
+        colors: ROLES.map(function (r) { return "- " + r[1] + ": " + GEN.colors[r[0]] }).join("\n"),
+        guide_url: base + "docs/webflow-hybrid-guide.md", assets_base: base + "dist/sites/" + p.id + "/"
+      }
+      G("text").value = tpl.replace(/\{\{(\w+)\}\}/g, function (m, k) { return k in map ? map[k] : m })
+      G("form").hidden = true; G("out").hidden = false; closePal()
+      setTimeout(function () { G("cp").focus({ preventScroll: true }) }, 60)
+    }).catch(function () {
+      G("err").textContent = "Could not load the prompt template. Check your connection and try again."; G("err").hidden = false
+    }).then(function () { go.textContent = "Generate prompt"; genSync() })
+  }
+  function genCopy() {
+    var txt = G("text").value, b = G("cp")
+    var ok = function () { b.textContent = "Copied"; showToast("Prompt copied"); setTimeout(function () { b.textContent = "Copy prompt" }, 2000) }
+    if (copySync(txt)) return ok()
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, function () { G("text").select() })
+    else G("text").select()
+  }
+  function genDownload() {
+    var a = document.createElement("a"), url = URL.createObjectURL(new Blob([G("text").value], { type: "text/markdown" }))
+    a.href = url; a.download = GEN.p.id + "-" + GEN.tech + "-prompt.md"; document.body.appendChild(a); a.click(); a.remove()
+    setTimeout(function () { URL.revokeObjectURL(url) }, 1500)
+  }
+  if (gen && genBtn) {
+    G("grid").innerHTML = SWATCHES.map(function (c) { return '<button type="button" class="awl-sw" data-c="' + c + '" style="background:' + c + '" aria-label="' + c + '"></button>' }).join("")
+    genBtn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); openGen() })
+    gen.addEventListener("click", function (e) {
+      var t = e.target
+      if (t.closest("[data-gen-close]")) return closeGen()
+      var pill = t.closest(".awl-pill")
+      if (pill) {
+        GEN.tech = pill.dataset.tech
+        gen.querySelectorAll(".awl-pill").forEach(function (b) { var on = b === pill; b.classList.toggle("on", on); b.setAttribute("aria-checked", on ? "true" : "false") })
+        return genSync()
+      }
+      var dot = t.closest(".awl-dot"); if (dot) return genRole === dot.dataset.role ? closePal() : openPal(dot.dataset.role)
+      var sw = t.closest(".awl-sw"); if (sw && genRole) { setColor(genRole, sw.dataset.c); return closePal() }
+      if (t.closest("#gen-pal-done")) return closePal()
+      if (t.closest("#gen-go")) return genBuild()
+      if (t.closest("#gen-edit")) { G("out").hidden = true; G("form").hidden = false; return }
+      if (t.closest("#gen-cp")) return genCopy()
+      if (t.closest("#gen-dl")) return genDownload()
+    })
+    G("brief").addEventListener("input", genSync)
+    G("color").addEventListener("input", function () { if (genRole) { setColor(genRole, this.value); G("hex").value = this.value.toLowerCase() } })
+    G("hex").addEventListener("input", function () {
+      var v = this.value.trim(); if (v && v[0] !== "#") v = "#" + v
+      if (genRole && HEX.test(v)) { setColor(genRole, v); G("color").value = v.toLowerCase() }
+    })
+    gen.addEventListener("keydown", function (e) {
+      if (e.key !== "Tab") return
+      var f = [].slice.call(gen.querySelectorAll("button:not(:disabled), textarea, input")).filter(function (x) { return x.offsetParent !== null })
+      if (!f.length) return
+      var first = f[0], last = f[f.length - 1]
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+    })
+  }
 
   // ---------- clock ----------
   function clock() {
@@ -726,7 +820,7 @@ window.AWL_RUN = function (C, ATLAS) {
       id: el.getAttribute("data-id") || title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
       t: title, k: txt(el, "kind"), d: txt(el, "desc"),
       g: txt(el, "tags").split(",").map(function (s) { return s.trim() }).filter(Boolean),
-      u: a ? a.getAttribute("href") : "", live: a ? a.getAttribute("href") : "", case: true,
+      u: a ? a.getAttribute("href") : "", live: a ? a.getAttribute("href") : "", case: true, repo: el.getAttribute("data-awl-repo") || "",
       m: (gif || el.hasAttribute("data-awl-hero") ? [hero] : srcs).filter(Boolean).map(function (s) { return { s: s, g: gif, w: 4, h: 3 } })
     }
   }).filter(function (p) { return p.m.length })
