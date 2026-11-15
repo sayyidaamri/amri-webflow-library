@@ -679,7 +679,7 @@ window.AWL_RUN = function (C, ATLAS) {
     genBtn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); openGen() })
     gen.addEventListener("click", function (e) {
       var t = e.target
-      if (t.closest("[data-gen-close]")) return closeGen()
+      if (t === gen || (t.closest("[data-gen-close]") && t.closest("[data-gen-close]") !== gen)) return closeGen()
       var pill = t.closest(".awl-pill")
       if (pill) {
         GEN.tech = pill.dataset.tech
@@ -693,7 +693,7 @@ window.AWL_RUN = function (C, ATLAS) {
       if (t.closest("#gen-edit")) { G("out").hidden = true; G("form").hidden = false; return }
       if (t.closest("#gen-cp")) return genCopy()
       if (t.closest("#gen-dl")) return genDownload()
-    })
+    }, true)
     G("brief").addEventListener("input", genSync)
     G("color").addEventListener("input", function () { if (genRole) { setColor(genRole, this.value); G("hex").value = this.value.toLowerCase() } })
     G("hex").addEventListener("input", function () {
