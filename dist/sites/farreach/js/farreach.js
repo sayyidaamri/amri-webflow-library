@@ -85,7 +85,7 @@
   /* ---------- header ---------- */
   var header = $(".fr-header", root);
   var nav = $(".fr-nav", root), navArea = $(".fr-nav_area", root), menuLabel = $(".fr-nav_menu", root);
-  $$(".fr-nav_link", root).forEach(function (a) { if (a.getAttribute("href") && toPath(a.href) === location.pathname) a.setAttribute("aria-current", "page"); });
+  $$(".fr-nav_link", root).forEach(function (a) { var h = a.getAttribute("href") || ""; if (h && h.indexOf("#") < 0 && toPath(a.href) === location.pathname) a.setAttribute("aria-current", "page"); });
   if (nav && navArea) {
     var closeT;
     var open = function (v) { nav.classList.toggle("open", v); if (menuLabel) menuLabel.setAttribute("aria-expanded", v); };
@@ -137,6 +137,12 @@
     });
   });
 
+  /* ---------- CMS lists: sort by data-order ---------- */
+  $$(".w-dyn-items", root).forEach(function (list) {
+    var its = $$(":scope > .w-dyn-item", list); if (its.length < 2 || !its[0].querySelector("[data-order]")) return;
+    its.sort(function (a, b) { return (+a.querySelector("[data-order]").getAttribute("data-order") || 0) - (+b.querySelector("[data-order]").getAttribute("data-order") || 0); }).forEach(function (it) { list.appendChild(it); });
+  });
+
   /* ---------- case cards: chips + cursor ---------- */
   $$(".fr-card", root).forEach(function (c) {
     c.setAttribute("data-cursor", "view case"); c.setAttribute("draggable", "false");
@@ -144,6 +150,7 @@
     if (s && !s.dataset.done) { var list = s.textContent.split(",").map(function (x) { return x.trim(); }).filter(Boolean); s.innerHTML = list.map(function (x) { return '<span class="fr-chip">' + x + "</span>"; }).join(""); s.dataset.done = 1; }
     $$("img", c).forEach(function (i) { i.setAttribute("draggable", "false"); });
   });
+  $$(".fr-chips", root).forEach(function (s) { var list = s.textContent.split(",").map(function (x) { return x.trim(); }).filter(Boolean); s.innerHTML = list.slice(0, 3).map(function (x) { return '<span class="fr-chip">' + x + "</span>"; }).join(""); });
   // case template: hide the current case from "more cases"
   $$(".fr-rail .fr-card", root).forEach(function (c) { if (toPath(c.href) === location.pathname) { var it = c.closest(".w-dyn-item") || c; it.style.display = "none"; } });
 

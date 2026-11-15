@@ -167,3 +167,20 @@ html.fr-live [data-fr-rv].in{opacity:1;transform:none}
 .fr-field .fr-field_msg{opacity:0;transition:opacity 300ms}
 .fr-field.err .fr-field_msg{opacity:1}
 @media (prefers-reduced-motion:reduce){.page-wrapper.is-fr *,.page-wrapper.is-fr *::before,.page-wrapper.is-fr *::after{animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:1ms!important}}
+/* ---------- buttons, filters, grid, form ---------- */
+.fr-btn{transition:background-color 400ms var(--fr-ease),color 400ms var(--fr-ease),border-color 400ms}
+.fr-btn:hover,.fr-submit:hover{background-color:#fdc115;border-color:#fdc115;color:#000}
+.fr-submit{cursor:pointer;transition:background-color 400ms var(--fr-ease),border-color 400ms}
+.fr-filter_list{display:flex;flex-wrap:wrap;gap:.6rem}
+.fr-filter{height:2.4rem;padding:0 1rem;border:1px solid currentColor;border-radius:2rem;background:none;color:inherit;font:700 1rem/1 "Hanken Grotesk",Arial,sans-serif;cursor:pointer}
+@media (min-width:768px){.fr-grid>.w-dyn-item:nth-child(even){margin-top:6rem}.fr-grid .fr-card_title{font-size:2.6rem;line-height:2.95rem}.fr-grid .fr-card_info{top:4rem;left:2.6rem}}
+.fr-row_name{transition:transform 600ms var(--fr-ease),color 300ms}
+.fr-row:hover .fr-row_name{transform:translateX(1rem);color:#fdc115}
+.fr-biglist .fr-row:hover{padding-left:0}
+.fr-input::placeholder{color:inherit;opacity:.3}
+.fr-input:focus{outline:none;border-bottom-color:#fdc115!important}
+select.fr-input{-webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 14px) 55%,calc(100% - 8px) 55%;background-size:6px 6px;background-repeat:no-repeat}
+.fr-form .w-form-done{background:none;padding:0;text-align:left;font-size:2.6rem;line-height:3rem;font-weight:700;margin-top:4rem}
+.fr-form .w-form-fail{background:#000;color:#fdc115;padding:1rem 1.25rem;margin-top:1.5rem;font-weight:700}
+.fr-quote{quotes:"\201C" "\201D"}
+.fr-quote::before{content:open-quote}.fr-quote::after{content:close-quote}
