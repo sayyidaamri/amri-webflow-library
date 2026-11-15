@@ -209,6 +209,13 @@ def target_for(sel):
     mapped = [classmap[c] for c in full]
     return (tuple(mapped[:-1]), mapped[-1], m.group(2))
 
+FORCE = set()      # (style key, longhand) kept in fx in some slot -> keep in fx in every slot (cascade order)
+NEW_FORCE = set()
+
+def longhands(name, val):
+    ex = expand(name, val)
+    return [k for k, _ in ex] if ex else [name]
+
 def handle(rule, media):
     sel = ser(rule.prelude)
     decls = [d for d in tinycss2.parse_declaration_list(rule.content, skip_whitespace=True, skip_comments=True) if d.type == 'declaration']
@@ -228,13 +235,19 @@ def handle(rule, media):
                 tgt = None
             for d in decls:
                 val = ser(d.value)
+                lh = longhands(d.lower_name, val)
+                if any((key, k) in FORCE for k in lh):
+                    rest.append(f'{d.name}:{val}{" !important" if d.important else ""}')
+                    continue
                 if d.important or FX_PROPS.match(d.lower_name) or (p, d.lower_name) in KEEP_FX:
+                    NEW_FORCE.update((key, k) for k in lh)
                     rest.append(f'{d.name}:{val}{" !important" if d.important else ""}')
                     continue
                 ex = expand(d.lower_name, val)
                 if ex is not None and any(native_value(v) is None for _, v in ex):
                     ex = None  # judge each longhand part, not the shorthand string
                 if ex is None:
+                    NEW_FORCE.update((key, k) for k in lh)
                     rest.append(f'{d.name}:{val}')
                     continue
                 for k, v in ex:
@@ -251,19 +264,30 @@ def handle(rule, media):
         if rest:
             fx.append((media, rename_sel(p), ';'.join(rest)))
 
-top_fx = []
-for node in tinycss2.parse_stylesheet(css_src, skip_whitespace=True, skip_comments=True):
-    if node.type == 'qualified-rule':
-        if ser(node.prelude) == ':root':
-            continue  # tokens handled below
-        handle(node, None)
-    elif node.type == 'at-rule' and node.lower_at_keyword == 'media':
-        q = ser(node.prelude)
-        for r in tinycss2.parse_rule_list(node.content, skip_whitespace=True, skip_comments=True):
-            if r.type == 'qualified-rule':
-                handle(r, q)
-    elif node.type == 'at-rule':
-        top_fx.append(ser([node]))
+def parse_all():
+  global top_fx
+  top_fx = []
+  for node in tinycss2.parse_stylesheet(css_src, skip_whitespace=True, skip_comments=True):
+      if node.type == 'qualified-rule':
+          if ser(node.prelude) == ':root':
+              continue  # tokens handled below
+          handle(node, None)
+      elif node.type == 'at-rule' and node.lower_at_keyword == 'media':
+          q = ser(node.prelude)
+          for r in tinycss2.parse_rule_list(node.content, skip_whitespace=True, skip_comments=True):
+              if r.type == 'qualified-rule':
+                  handle(r, q)
+      elif node.type == 'at-rule':
+          top_fx.append(ser([node]))
+
+
+for _ in range(4):
+    native.clear(); order.clear(); fx.clear()
+    parse_all()
+    if NEW_FORCE <= FORCE:
+        break
+    FORCE |= NEW_FORCE
+print('forced', len(FORCE))
 
 # ---------------- move combo-only classes into their combos ----------------
 firsts = set(classmap[c[0]] for c in chains)
