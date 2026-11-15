@@ -647,8 +647,11 @@ window.AWL_RUN = function (C, ATLAS) {
   var LD = { target: 0.05, shown: 0, t0: performance.now(), last: performance.now(), resolve: null }
   var ldEase = function (x) { return easeIO3(Math.min(1, Math.max(0, x))) }
   function ldFrame(now) {
-    var dt = Math.min(0.25, (now - LD.last) / 1000); LD.last = now
-    var pace = Math.min(1, (now - LD.t0) / 1600), goal = Math.min(LD.target, pace)
+    // pace counts rendered frames only (dt capped), so a long blocking task (building the image sheet,
+    // heavy on phones) can no longer use up the 1.6 s and make the mark appear and vanish in one flash
+    var dt = Math.min(1 / 30, Math.max(0, (now - LD.last) / 1000)); LD.last = now
+    LD.el = (LD.el || 0) + dt
+    var pace = Math.min(1, LD.el / 1.6), goal = Math.min(LD.target, pace)
     LD.shown += (goal - LD.shown) * (1 - Math.exp(-dt * 7))
     if (LD.target >= 1 && pace >= 1 && LD.shown > 0.996) LD.shown = 1
     var p = LD.shown
