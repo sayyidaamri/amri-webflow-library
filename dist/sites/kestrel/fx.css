@@ -1,0 +1,122 @@
+/* KESTREL SYSTEMS — effect CSS for the Webflow build. Layout lives in Webflow; this file is only fonts, states and motion.
+   Hidden/animated states are gated on html.ks-live so the Designer canvas shows the final state. */
+@font-face{font-family:"Big Shoulders Display";font-weight:100 900;font-display:swap;src:url(fonts/BigShouldersDisplay-100-900-latin.woff2) format("woff2")}
+@font-face{font-family:"Geist";font-weight:300 600;font-display:swap;src:url(fonts/Geist-300-600-latin.woff2) format("woff2")}
+@font-face{font-family:"Geist Mono";font-weight:400;font-display:swap;src:url(fonts/GeistMono-400-latin.woff2) format("woff2")}
+@font-face{font-family:"Geist Mono";font-weight:500;font-display:swap;src:url(fonts/GeistMono-500-latin.woff2) format("woff2")}
+:root{--ks-e-out:cubic-bezier(.16,1,.3,1);--ks-e-std:cubic-bezier(.4,0,.2,1)}
+html:has(.is-ks){background:#050505;color-scheme:dark}
+body:has(.page-wrapper.is-ks){background:#050505;-webkit-font-smoothing:antialiased}
+.page-wrapper.is-ks ::selection{background:#f2f2ee;color:#050505}
+.page-wrapper.is-ks::after{content:"";position:fixed;inset:8px;border:1px solid rgba(242,242,238,.28);pointer-events:none;z-index:60}
+@media (max-width:767px){.page-wrapper.is-ks::after{inset:4px}}
+.ks-outline{color:transparent;-webkit-text-stroke:1px rgba(242,242,238,.55)}
+.ks-outline-strong{color:rgba(5,5,5,.55);-webkit-text-stroke:1.5px #f2f2ee}
+.ks-grain::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.07;mix-blend-mode:screen;z-index:1;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.ks-ping::before,.ks-ping::after{content:"";position:absolute;inset:0;border-radius:99px;background:#f2f2ee}
+.ks-ping::before{opacity:.6;animation:ks-ping 1s cubic-bezier(0,0,.2,1) infinite}
+@keyframes ks-ping{75%,100%{transform:scale(2.4);opacity:0}}
+@keyframes ks-blink{50%{opacity:0}}
+@keyframes ks-bounce{0%,100%{transform:translateY(-15%)}50%{transform:none}}
+.ks-blink{animation:ks-blink 1s steps(1) infinite}
+.ks-bounce{animation:ks-bounce 1s infinite}
+.ks-fx canvas,.ks-pix canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* split text + reveals */
+.ks-line{display:inline-block;overflow:hidden;white-space:nowrap;padding:.14em 0 .06em;margin-top:-.14em;vertical-align:top}
+.ks-char{display:inline-block;will-change:transform}
+.ks-live [data-split] .ks-char{transform:translateY(110%)}
+.ks-live [data-split].is-in .ks-char{transform:none;transition:transform 1s var(--ks-e-out);transition-delay:calc(var(--i)*22ms)}
+.ks-live .ks-reveal{opacity:0;transform:translateY(40px);transition:opacity 1s var(--ks-e-out),transform 1s var(--ks-e-out)}
+.ks-live .ks-reveal.is-in{opacity:1;transform:none}
+.ks-live [data-in]{opacity:0;transform:translateY(16px)}
+.ks-live.booted [data-in]{opacity:1;transform:none;transition:opacity .9s var(--ks-e-out),transform .9s var(--ks-e-out);transition-delay:calc(var(--d,0)*80ms + 150ms)}
+.has-cursor [data-prox] .ks-char{font-variation-settings:"wght" var(--w,300)}
+.ks-live.booted .ks-header{animation:ks-hdr .9s var(--ks-e-out) both}
+@keyframes ks-hdr{from{transform:translateY(-100%)}}
+
+/* nav underline + mobile menu */
+.ks-nav_link .ks-ul{position:absolute;left:0;bottom:-6px;height:1px;width:0;background:#f2f2ee;transition:width .3s}
+.ks-nav_link:hover .ks-ul,.ks-nav_link.w--current .ks-ul,.ks-nav_link.is-active .ks-ul{width:100%}
+.ks-nav_link.w--current{color:#f2f2ee}
+.ks-mnav{transition:opacity .5s var(--ks-e-out),visibility 0s .5s}
+.ks-menu-open .ks-mnav{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .5s var(--ks-e-out)}
+.ks-mnav_link{transition:transform .8s var(--ks-e-out),color .2s}
+.ks-live .ks-mnav_link{transform:translateY(40%)}
+.ks-menu-open .ks-mnav_link{transform:none}
+
+/* buttons, cards */
+.ks-btn{transition:color .2s var(--ks-e-std),background-color .2s var(--ks-e-std),border-color .2s var(--ks-e-std)}
+.ks-btn.is-solid:hover{background-color:#fff}
+.ks-btn.is-ghost:hover{background-color:#f2f2ee;color:#050505}
+.ks-btn svg,.ks-mail svg{width:14px;height:14px;flex:none}
+.ks-mail svg{width:.5em;height:.5em;transition:transform .3s}
+.ks-mail:hover svg{transform:translate(3px,-3px)}
+.ks-chip,.ks-filter{transition:color .2s,border-color .2s,background-color .2s}
+.ks-chip:hover{border-color:rgba(242,242,238,.6);color:#f2f2ee}
+.ks-filter.is-on{background:#f2f2ee;color:#050505;border-color:#f2f2ee}
+.ks-pix .ks-pix_img{--rx:50%;--ry:50%}
+.ks-live .ks-pix .ks-pix_img{clip-path:circle(0% at var(--rx) var(--ry));transition:clip-path .9s var(--ks-e-out)}
+.ks-live .ks-pix:hover .ks-pix_img{clip-path:circle(150% at var(--rx) var(--ry))}
+.ks-live .ks-pix[data-revealed="true"] .ks-pix_img{clip-path:circle(150% at 50% 50%);filter:grayscale(1) contrast(1.05);transition-delay:.25s}
+.ks-card{transition:background-color .5s,color .5s,border-color .3s}
+.ks-card:hover .ks-card_arrow{transform:translate(4px,-4px)}
+.ks-card_arrow{transition:transform .3s}
+.ks-work_item{transition:opacity .4s,transform .4s}
+.ks-work_item.is-hidden{display:none}
+.ks-hidx a{transition:color .2s}
+
+/* marquee */
+.ks-marquee{will-change:transform}
+
+/* horizontal pinned rail (desktop) */
+@media (min-width:992px){
+  .ks-live .ks-hpin{height:var(--pin-h,400vh)}
+  .ks-live .ks-hpin .ks-rail{position:sticky;top:0;height:100vh;overflow:hidden}
+  .ks-live .ks-hpin .ks-track{flex-wrap:nowrap;width:max-content;height:100%;will-change:transform}
+}
+
+/* modal */
+.ks-modal{transition:opacity .45s var(--ks-e-out),visibility 0s .45s}
+.ks-modal.is-open{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .45s var(--ks-e-out)}
+.ks-modal_panel{transition:transform .7s var(--ks-e-out)}
+.ks-live .ks-modal .ks-modal_panel{transform:translateX(100%)}
+.ks-live .ks-modal.is-open .ks-modal_panel{transform:none}
+.ks-lock,.ks-lock body{overflow:hidden}
+.ks-modal_panel{overscroll-behavior:contain}
+
+/* form */
+.ks-field.is-error .ks-input{border-color:#ff6b5e}
+.ks-field.is-error .ks-err{display:block}
+.ks-input:focus{border-color:#f2f2ee;outline:0}
+.ks-submit[disabled]{opacity:.5;cursor:wait}
+
+/* JS-built chrome: preloader, curtains, cursor */
+.ks-shell{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;justify-content:space-between;padding:32px 40px;background:#050505;color:#f2f2ee;font-family:"Geist Mono",monospace;transition:opacity .6s var(--ks-e-std)}
+.ks-shell_top{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+.ks-shell_log{position:absolute;left:50%;top:28%;width:min(448px,calc(100% - 32px));transform:translateX(-50%);font-size:12px;line-height:24px;color:rgba(242,242,238,.7);list-style:none;margin:0;padding:0}
+.ks-shell_log li{display:flex;justify-content:space-between}
+.ks-shell_log li span::before{content:"> ";color:rgba(242,242,238,.4)}
+.ks-shell_log li b{font-weight:400;color:#f2f2ee}
+.ks-shell_bottom{display:flex;align-items:flex-end;justify-content:space-between}
+.ks-shell_count{font-family:"Big Shoulders Display",sans-serif;font-weight:300;line-height:.78;font-size:clamp(7rem,26vw,24rem);font-variant-numeric:tabular-nums;transition:opacity .4s}
+.ks-shell_geo{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,242,238,.7);text-align:right;line-height:1.6}
+.ks-shell_bar{margin-top:16px;height:1px;background:rgba(242,242,238,.12)}
+.ks-shell_bar i{display:block;height:1px;background:#f2f2ee;transform-origin:left;transform:scaleX(0)}
+.ks-shell.dim .ks-shell_count{opacity:.35}
+.ks-shell.out{opacity:0;pointer-events:none}
+@media (max-width:767px){.ks-shell{padding:20px 16px}}
+.ks-curtain{position:fixed;inset:0;z-index:95;background:#0b0b0b;pointer-events:none;transform:scaleY(0);display:flex;align-items:center;justify-content:center;font-family:"Geist Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,242,238,.7)}
+.ks-curtain.is-a{transform-origin:bottom;border-top:1px solid rgba(242,242,238,.12)}
+.ks-curtain.is-b{transform-origin:top;border-bottom:1px solid rgba(242,242,238,.12)}
+.ks-curtain.on{transform:scaleY(1)}
+.ks-curtain.anim{transition:transform .7s cubic-bezier(.76,0,.24,1)}
+.ks-cursor,.ks-dot{position:fixed;left:0;top:0;pointer-events:none;z-index:90}
+.ks-cursor i{display:flex;align-items:center;justify-content:center;width:34px;height:34px;margin:-17px 0 0 -17px;border:1px solid rgba(242,242,238,.5);border-radius:999px;mix-blend-mode:difference;transition:width .45s var(--ks-e-out),height .45s var(--ks-e-out),margin .45s var(--ks-e-out),background-color .3s,border-color .3s}
+.ks-cursor[data-state="hover"] i{width:56px;height:56px;margin:-28px 0 0 -28px;border-color:#f2f2ee}
+.ks-cursor[data-state="label"] i{width:96px;height:96px;margin:-48px 0 0 -48px;background:#f2f2ee;border-color:#f2f2ee}
+.ks-cursor b{font:400 11px/1 "Geist Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#050505;opacity:0;transform:scale(.6);transition:opacity .25s,transform .35s var(--ks-e-out)}
+.ks-cursor[data-state="label"] b{opacity:1;transform:none}
+.ks-dot{z-index:91;width:6px;height:6px;margin:-3px 0 0 -3px;background:#f2f2ee;mix-blend-mode:difference}
+@media (hover:none){.ks-btn.is-ghost:hover{background-color:rgba(255,255,255,.06);color:#f2f2ee}}
+@media (prefers-reduced-motion:reduce){.ks-live [data-split] .ks-char,.ks-live .ks-reveal,.ks-live [data-in]{transform:none!important;opacity:1!important;transition:none!important}}
