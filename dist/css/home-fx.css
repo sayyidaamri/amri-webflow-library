@@ -63,3 +63,10 @@
 .awl-cp-fields input::-webkit-outer-spin-button,.awl-cp-fields input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .awl-cp-sws{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px}
 .awl-cp-done{padding:10px 16px}
+
+.awl-tags{padding:0;margin:0}
+.awl-p-fit:not(.multi){overflow-y:auto}
+.awl-p-fit:not(.multi) > .awl-stage{flex:none;min-height:0;position:static;width:100%}
+.awl-p-fit:not(.multi) .awl-stage .awl-gallery{position:static;display:block;width:100%}
+.awl-p-fit:not(.multi) .awl-stage figure,.awl-p-fit:not(.multi) .awl-stage figure.crop{display:block;width:100%;max-height:none;aspect-ratio:auto;margin:0;border-radius:14px;overflow:hidden}
+.awl-p-fit:not(.multi) .awl-stage img,.awl-p-fit:not(.multi) .awl-stage video,.awl-p-fit:not(.multi) .awl-stage figure.crop img,.awl-p-fit:not(.multi) .awl-stage figure.crop video{width:100%;height:auto;max-width:100%;max-height:none;object-fit:contain;border-radius:0}

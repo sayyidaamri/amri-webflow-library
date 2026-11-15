@@ -495,7 +495,7 @@ window.AWL_RUN = function (C, ATLAS) {
 
   // ---------- the box ----------
   var gallery = $("#p-gallery"), stageEl = $("#p-stage"), scrollEl = $("#p-scroll"), body = document.body
-  var BASE_TITLE = document.title, openId = "", sideView = "", GEN = { p: null, tech: "", colors: {} }
+  var BASE_TITLE = document.title, openId = "", sideView = "", GEN = { p: null, tech: "", colors: {} }, CP = { el: null, h: 210, s: 1, v: 1 }
   function setView(v) {
     if (boxEl.dataset.view !== v) boxEl.dataset.view = v
     body.classList.toggle("boxed", v !== "closed")
@@ -632,7 +632,6 @@ window.AWL_RUN = function (C, ATLAS) {
     genSync()
   }
   // ---------- colour picker (floating modal: saturation/brightness area, hue, hex, RGB, presets) ----------
-  var CP = { el: null, h: 210, s: 1, v: 1 }
   function cpOpen() { return !!CP.el && !CP.el.hidden }
   function hsv2rgb(h, s, v) {
     var f = function (n) { var k = (n + h / 60) % 6; return v - v * s * Math.max(0, Math.min(k, 4 - k, 1)) }
