@@ -165,8 +165,14 @@ fx = []       # (media or None, selector, decl_text)
 SIMPLE_CLASS = re.compile(r'^((?:\.[a-zA-Z][\w-]*)+)(:hover)?$')
 SIMPLE_ID = re.compile(r'^#([\w-]+)(:hover)?$')
 
+# kept in fx: classes without a Webflow style (svg/embed markup) and ids inside embeds
+EX_CLASS = re.compile(r'^(snake|snake--\w+|s-\w+|news-bg|news-msg|pl-[\w-]+|tr-[\w-]+|glyph|g[123])$')
+EX_ID = re.compile(r'^(preloader|transition|video-overlay|vo-[\w-]+|scroll-indicator|reel-line|goal-line)$')
+
 def target_for(sel):
     """selector part -> (chain, style_name, pseudo) or None"""
+    if any(EX_CLASS.match(c) for c in re.findall(r'\.([\w-]+)', sel)) or any(EX_ID.match(i) for i in re.findall(r'#([\w-]+)', sel)):
+        return None
     m = SIMPLE_ID.match(sel)
     if m:
         i = m.group(1)
