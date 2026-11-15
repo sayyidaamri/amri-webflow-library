@@ -426,7 +426,7 @@ void main(){
     img.onload = () => io.observe(wrap);
     img.onerror = () => { wrap.dataset.revealed = "true"; };
     if (reveal) reveal.loading = "eager";
-    setTimeout(() => { if (!started) wrap.dataset.revealed = "true"; }, 6000);
+    setTimeout(() => { if (!img.naturalWidth) wrap.dataset.revealed = "true"; }, 8000);
     if (img.complete && img.naturalWidth) io.observe(wrap);
     addEventListener("resize", () => { if (done) draw(1); });
     wrap.addEventListener("pointermove", (e) => {
