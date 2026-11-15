@@ -24,8 +24,24 @@ function ncSubpage() {
   go("brandHome", "/noctelle/home"); go("introOpenBtn", "/noctelle/studio"); go("projectsMenuBtn", "/noctelle/home");
   document.querySelectorAll("#projectsDropdownMenu a").forEach(function (a) { a.setAttribute("href", "/noctelle/home"); });
   var st = document.createElement("style");
-  st.textContent = "body,body *{cursor:auto!important}.nc-nav{background:rgba(0,0,0,.82);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid rgba(212,184,122,.14)}";
+  st.textContent = ".nc-nav{background:rgba(0,0,0,.82);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid rgba(212,184,122,.14)}";
   document.body.appendChild(st);
+  /* same gold cursor as home (desktop pointers only; fx.css hides it on phones) */
+  if (window.matchMedia && matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    var c = document.createElement("div");
+    c.className = "nc-cursor nc-cursor-default"; c.setAttribute("aria-hidden", "true");
+    c.style.left = "-100px"; c.style.top = "-100px";
+    document.body.appendChild(c);
+    var HOVER = "a, button, input, select, textarea, label, [data-cursor-hover], [role='button']", down = false, over = false;
+    var paint = function () { c.className = "nc-cursor " + (down ? "nc-cursor-click" : over ? "nc-cursor-hover" : "nc-cursor-default"); };
+    document.addEventListener("mousemove", function (e) {
+      c.style.left = e.clientX + "px"; c.style.top = e.clientY + "px"; c.style.opacity = "1";
+      var o = !!(e.target.closest && e.target.closest(HOVER)); if (o !== over) { over = o; paint(); }
+    }, { passive: true });
+    document.addEventListener("mousedown", function () { down = true; paint(); });
+    document.addEventListener("mouseup", function () { down = false; paint(); });
+    document.documentElement.addEventListener("mouseleave", function () { c.style.opacity = "0"; });
+  }
   var t = document.getElementById("soundToggle");
   if (!t) return;
   var key = "nc-sound", on = true, audio = new Audio(NCB + "audio/ambient.mp3");

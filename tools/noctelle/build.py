@@ -140,7 +140,7 @@ fx_css = '\n'.join(fx)
 # custom cursor only when the app runs (home); other pages keep native cursor
 fx_css = fx_css.replace('body{overflow-x:hidden;overflow-y:auto;cursor:none}', 'body{overflow-x:hidden;overflow-y:auto}')
 fx_css += '\n/* EN-only build: hide secondary-language duplicates */\n.nc-pt-intro-tab-en,.nc-pt-section-tab-en,.nc-pt-intro-section-title small,.nc-pt-info-en,.nc-pt-info-label small,.nc-pt-title-en:empty,.nc-pt-title span:empty{display:none!important}\n.nc-intro-modal_subtitle a{color:inherit;text-decoration:underline;text-underline-offset:3px}\n'
-fx_css += '\n/* Webflow port: inline svg separators */\n.nc-nav_sep svg{display:block;height:8px;width:8px;filter:drop-shadow(0 0 2px rgba(255,255,255,.3))}\n@media screen and (max-width: 767px){.nc-nav_sep svg{height:5px;width:5px}}\n@media screen and (max-width: 479px){.nc-nav_brand{width:27px;overflow:hidden}}\n'
+fx_css += '\n/* Webflow port: inline svg separators */\n.nc-nav_sep svg{display:block;height:8px;width:8px;filter:drop-shadow(0 0 2px rgba(255,255,255,.3))}\n@media screen and (max-width: 767px){.nc-nav_sep svg{height:5px;width:5px}}\n@media screen and (max-width: 479px){.nc-nav_brand{width:27px;overflow:hidden}}\n/* projects menu also opens on hover (desktop); ::after bridges the gap to the menu */\n.nc-nav_dropdown{position:relative}.nc-nav_dropdown::after{content:"";position:absolute;left:-12px;right:-12px;top:100%;height:18px}\n@media (hover: hover) and (pointer: fine){.nc-nav_dropdown:hover .nc-nav_dropdown-menu{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}}\n'
 open(f'{OUT}/fx.css', 'w').write(fx_css)
 json.dump(native, open(f'{OUT}/native.json', 'w'), indent=0)
 
