@@ -425,6 +425,8 @@ void main(){
     const io = new IntersectionObserver(([en]) => { if (en.isIntersecting && img.complete && img.naturalWidth) run(); }, { threshold: 0.15 });
     img.onload = () => io.observe(wrap);
     img.onerror = () => { wrap.dataset.revealed = "true"; };
+    if (reveal) reveal.loading = "eager";
+    setTimeout(() => { if (!started) wrap.dataset.revealed = "true"; }, 6000);
     if (img.complete && img.naturalWidth) io.observe(wrap);
     addEventListener("resize", () => { if (done) draw(1); });
     wrap.addEventListener("pointermove", (e) => {
