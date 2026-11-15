@@ -518,9 +518,10 @@ window.AWL_RUN = function (C, ATLAS) {
     scrollEl.style.setProperty("--ar", String(isCrop(m) ? 4 / 3 : m.w / m.h || 4 / 3))
     gallery.innerHTML = all.map(function (x, n) {
       var cls = isCrop(x) ? ' class="crop"' : ""
+      var shown = x.g || x.s
       return x.v
         ? "<figure" + cls + '><video src="' + esc(x.v) + '" poster="' + esc(x.s) + '" autoplay muted loop playsinline' + (n ? ' preload="none"' : "") + "></video></figure>"
-        : "<figure" + cls + '><img src="' + esc(x.s) + '" alt="' + esc(p.t) + '" decoding="async"' + (n ? ' loading="lazy"' : "") + " onload=\"this.classList.add('in')\"></figure>"
+        : "<figure" + cls + '><img src="' + esc(shown) + '" alt="' + esc(p.t) + '" decoding="async"' + (n ? ' loading="lazy"' : "") + " onload=\"this.classList.add('in')\"></figure>"
     }).join("")
     $("#p-count").textContent = all.length > 1 ? all.length + " pieces" : ""
     scrollEl.scrollTop = 0
@@ -718,13 +719,15 @@ window.AWL_RUN = function (C, ATLAS) {
   var projects = items.map(function (el, pi) {
     var a = el.querySelector('[data-awl="link"]') || el.querySelector("a[href]")
     var srcs = [].slice.call(el.querySelectorAll("img")).map(function (im) { return im.getAttribute("src") }).filter(Boolean)
+    // one card picture per website (its hero) and one animated preview (gif) in the box; data-awl-hero / data-awl-gif override the <img> list
+    var hero = el.getAttribute("data-awl-hero") || srcs[0] || "", gif = el.getAttribute("data-awl-gif") || ""
     var title = txt(el, "title") || ("Website " + (pi + 1))
     return {
       id: el.getAttribute("data-id") || title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
       t: title, k: txt(el, "kind"), d: txt(el, "desc"),
       g: txt(el, "tags").split(",").map(function (s) { return s.trim() }).filter(Boolean),
       u: a ? a.getAttribute("href") : "", live: a ? a.getAttribute("href") : "", case: true,
-      m: srcs.map(function (s) { return { s: s, w: 4, h: 3 } })
+      m: (gif || el.hasAttribute("data-awl-hero") ? [hero] : srcs).filter(Boolean).map(function (s) { return { s: s, g: gif, w: 4, h: 3 } })
     }
   }).filter(function (p) { return p.m.length })
 
