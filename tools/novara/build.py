@@ -237,6 +237,11 @@ def handle(rule, media):
                     native[key][slot][k] = native_value(v)
         else:
             rest = [f'{d.name}:{ser(d.value)}{" !important" if d.important else ""}' for d in decls]
+        if rest and p == ':root' and media:
+            # breakpoint token overrides must also reach the Webflow variables used by native styles
+            for d in decls:
+                if d.name in TOK:
+                    rest.append(f'{WFVAR(TOK[d.name][0])}:{ser(d.value)}')
         if rest:
             fx.append((media, rename_sel(p), ';'.join(rest)))
 
