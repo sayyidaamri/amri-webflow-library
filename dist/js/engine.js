@@ -41,7 +41,7 @@ window.AWL_RUN = function (C, ATLAS) {
   // ---------- shaders ----------
   var VERT = [
     "attribute vec4 aPos; attribute vec4 aTex; attribute vec3 aMean; attribute vec4 aLook; attribute vec4 aFrom; attribute vec4 aAnim;",
-    "uniform float uFog, uGrow, uIntro, uTime, uHover, uD0, uMote, uSoft; uniform vec2 uGrid, uTilePx;",
+    "uniform float uFog, uGrow, uIntro, uTime, uHover, uHoverPrev, uHoverT, uD0, uMote, uSoft; uniform vec2 uGrid, uTilePx;",
     "varying vec2 vUv; varying vec2 vLocal; varying vec3 vMean; varying float vA; varying float vDepth; varying float vBias; varying float vDim; varying float vHover;",
     "vec2 swirl(vec2 b, float t) { return vec2(sin(b.y * .045 + t * .35) + .6 * sin((b.x + b.y) * .03 - t * .27), cos(b.x * .045 - t * .31) + .6 * cos((b.x - b.y) * .03 + t * .23)); }",
     "void main() {",
@@ -72,7 +72,7 @@ window.AWL_RUN = function (C, ATLAS) {
     "  vBias = uFog * pow(smoothstep(45.0, 1150.0, d), .75) * 5.0 + uSoft * .6;",   // depth of field from smaller mip levels
     "  vec2 pad = .5 * exp2(vBias) / uTilePx + .002; vec2 ins = mix(pad, 1.0 - pad, uv);",
     "  vUv = vec2((aTex.x + ins.x) / uGrid.x, 1.0 - (aTex.y + 1.0 - ins.y) / uGrid.y);",
-    "  vHover = abs(aTex.w - uHover) < .5 ? 1.0 : 0.0;",
+    "  vHover = (abs(aTex.w - uHover) < .5 ? uHoverT : 0.0) + (abs(aTex.w - uHoverPrev) < .5 ? 1.0 - uHoverT : 0.0);",   // eased hover in/out
     "  gl_Position = projectionMatrix * mv;",
     "}"].join("\n")
   var FRAG = [
@@ -84,9 +84,9 @@ window.AWL_RUN = function (C, ATLAS) {
     "  vec2 q = abs((vLocal - .5) * vec2(1.3333, 1.0)) - vec2(.6667, .5) + .06;",
     "  if (length(max(q, 0.0)) > .06) discard;",                                      // rounded corners
     "  vec3 c = mix(vMean, texture2D(uMap, vUv, vBias).rgb, uIn);",
+    "  float g = dot(c, vec3(.2126, .7152, .0722));",
+    "  c = mix(vec3(g), c, clamp(vHover, 0.0, 1.0));",                                // monochrome until hovered
     "  c = mix(uBg, c, mix(vDim, 1.0, uFog));",
-    "  float edge = min(min(vLocal.x, 1.0 - vLocal.x), min(vLocal.y, 1.0 - vLocal.y));",
-    "  if (vHover > .5) { c = mix(c, vec3(1.0), .06); if (edge < .014) c = vec3(1.0); }",
     "  c = mix(c, uBg, smoothstep(520.0, 1300.0, vDepth) * uFog);",                  // far cards sink into the dark
     "  c = mix(c, uBg, uSoft * .35);",
     "  gl_FragColor = vec4(c, 1.0);",
@@ -94,7 +94,7 @@ window.AWL_RUN = function (C, ATLAS) {
 
   var U = {
     uMap: { value: null }, uGrid: { value: new THREE.Vector2(C.atlas.cols, C.atlas.rows) }, uTilePx: { value: new THREE.Vector2(C.atlas.tw, C.atlas.th) },
-    uFog: { value: 0 }, uGrow: { value: 0 }, uIntro: { value: -1 }, uTime: { value: 0 }, uHover: { value: -1 }, uD0: { value: D0 },
+    uFog: { value: 0 }, uGrow: { value: 0 }, uIntro: { value: -1 }, uTime: { value: 0 }, uHover: { value: -1 }, uHoverPrev: { value: -1 }, uHoverT: { value: 1 }, uD0: { value: D0 },
     uMote: { value: 0 }, uSoft: { value: 0 }, uIn: { value: 0 }, uBg: { value: new THREE.Vector3(BG[0], BG[1], BG[2]) },
   }
 
@@ -336,7 +336,8 @@ window.AWL_RUN = function (C, ATLAS) {
   }
   function setHover(i) {
     if (i === hoverTile) return
-    hoverTile = i; U.uHover.value = i
+    U.uHoverPrev.value = U.uHoverT.value > .5 ? hoverTile : U.uHoverPrev.value
+    hoverTile = i; U.uHover.value = i; U.uHoverT.value = 0
     canvas.classList.toggle("hot", i >= 0)
     if (i >= 0) { hudLabel.textContent = C.projects[C.images[world[i].img][0]].t; hud.hidden = false } else hud.hidden = true
   }
@@ -464,6 +465,7 @@ window.AWL_RUN = function (C, ATLAS) {
     U.uFog.value = ease; U.uGrow.value = ease
     U.uSoft.value += ((isOpen() ? 1 : 0) - U.uSoft.value) * (1 - Math.exp(-dt * 6))
     U.uTime.value = now / 1000
+    if (U.uHoverT.value < 1) U.uHoverT.value = Math.min(1, U.uHoverT.value + dt * 3.2)
     if (introStart >= 0) U.uIntro.value = now - introStart
     var ramp = introStart < 0 ? 0 : Math.min(1, Math.max(0, ((now - introStart) / introEnd - 0.35) / 0.65))
     U.uMote.value = (1 - ease) * ramp * ramp
