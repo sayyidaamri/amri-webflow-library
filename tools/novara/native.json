@@ -990,14 +990,14 @@
     "position": "relative",
     "left": "0",
     "right": "0",
-    "top": "0",
     "bottom": "auto",
     "height": "118vw",
     "margin-top": "12px",
     "border-top-left-radius": "12px",
     "border-top-right-radius": "12px",
     "border-bottom-right-radius": "12px",
-    "border-bottom-left-radius": "12px"
+    "border-bottom-left-radius": "12px",
+    "top": "0"
    },
    "hover": {},
    "small_hover": {}
@@ -2830,11 +2830,7 @@
    },
    "small": {
     "width": "64px",
-    "height": "64px",
-    "margin-top": "-32px",
-    "margin-right": "0",
-    "margin-bottom": "0",
-    "margin-left": "-32px"
+    "height": "64px"
    },
    "hover": {},
    "small_hover": {}

@@ -235,6 +235,8 @@ def handle(rule, media):
                     continue
                 for k, v in ex:
                     native[key][slot][k] = native_value(v)
+                    if slot == 'base':  # a later unconditional rule overrides earlier breakpoint values
+                        native[key]['small'].pop(k, None)
         else:
             rest = [f'{d.name}:{ser(d.value)}{" !important" if d.important else ""}' for d in decls]
         if rest and p == ':root' and media:
