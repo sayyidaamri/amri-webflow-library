@@ -631,9 +631,16 @@ window.AWL_RUN = function (C, ATLAS) {
     while (svg.firstChild) svg.removeChild(svg.firstChild)
     spec.forEach(function (s) {
       var p = document.createElementNS(NS, "path")
-      p.setAttribute("class", "awl-ld-pen"); p.setAttribute("pathLength", "1"); p.setAttribute("d", s[0])
-      p.setAttribute("stroke-width", s[1]); p.style.stroke = "#f2f2f2"; p.style.strokeDashoffset = "1"
+      p.setAttribute("class", "awl-ld-pen"); p.setAttribute("d", s[0])
+      p.setAttribute("stroke-width", s[1]); p.style.stroke = "#f2f2f2"
       svg.appendChild(p)
+      // real lengths instead of pathLength="1": iOS Safari ignores pathLength for dash patterns,
+      // which left a 1px dash (invisible mark) and the loader only flashed
+      var L = 0; try { L = p.getTotalLength() } catch (e) {}
+      if (!(L > 0)) L = 120
+      p.__len = L
+      p.style.strokeDasharray = L + " " + (L + 4)
+      p.style.strokeDashoffset = String(L)
     })
   })()
   var loaderEl = $("#loader"), pens = [].slice.call(document.querySelectorAll(".awl-ld-pen"))
@@ -646,7 +653,7 @@ window.AWL_RUN = function (C, ATLAS) {
     if (LD.target >= 1 && pace >= 1 && LD.shown > 0.996) LD.shown = 1
     var p = LD.shown
     var s = [ldEase(p / 0.45), ldEase((p - 0.33) / 0.4), ldEase((p - 0.62) / 0.38)]
-    pens.forEach(function (el, k) { el.style.strokeDashoffset = (1 - s[k]).toFixed(4) })
+    pens.forEach(function (el, k) { el.style.strokeDashoffset = ((1 - s[k]) * (el.__len || 1)).toFixed(3) })
     if (p >= 1 && LD.resolve) { var r = LD.resolve; LD.resolve = null; r(); return }
     requestAnimationFrame(ldFrame)
   }
