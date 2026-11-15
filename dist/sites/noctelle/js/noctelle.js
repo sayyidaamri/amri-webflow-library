@@ -63,7 +63,7 @@ window.NOCTELLE_DATA={"projects":[{"year":"2021.09–2023.11","thumb":NCB + "img
     doc: '<path d="M6 3.5h8l4 4v13H6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 11h6M9 14.5h6M9 18h4" stroke="currentColor" stroke-width="1.3"/>'
   };
   function icon(name, cls) {
-    return '<svg class="' + (cls || "pt-intro-icon") + '" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[name] || ICONS.star) + "</svg>";
+    return '<svg class="' + (cls || "nc-pt-intro-icon") + '" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[name] || ICONS.star) + "</svg>";
   }
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
