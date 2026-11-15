@@ -140,6 +140,7 @@ fx_css = '\n'.join(fx)
 # custom cursor only when the app runs (home); other pages keep native cursor
 fx_css = fx_css.replace('body{overflow-x:hidden;overflow-y:auto;cursor:none}', 'body{overflow-x:hidden;overflow-y:auto}')
 fx_css += '\n/* EN-only build: hide secondary-language duplicates */\n.nc-pt-intro-tab-en,.nc-pt-section-tab-en,.nc-pt-intro-section-title small,.nc-pt-info-en,.nc-pt-info-label small,.nc-pt-title-en:empty,.nc-pt-title span:empty{display:none!important}\n.nc-intro-modal_subtitle a{color:inherit;text-decoration:underline;text-underline-offset:3px}\n'
+fx_css += '\n/* Webflow port: inline svg separators */\n.nc-nav_sep svg{display:block;height:8px;width:8px;filter:drop-shadow(0 0 2px rgba(255,255,255,.3))}\n@media screen and (max-width: 767px){.nc-nav_sep svg{height:5px;width:5px}}\n'
 open(f'{OUT}/fx.css', 'w').write(fx_css)
 json.dump(native, open(f'{OUT}/native.json', 'w'), indent=0)
 
@@ -279,3 +280,15 @@ def native_css(rules):
         out.append(body if bp is None else f'@media screen and (max-width: {bp}px){{{body}}}')
     return '\n'.join(out)
 open(f'{OUT}/native.css','w').write(native_css(native))
+
+# Webflow port: also ship every "native" rule inside fx.css (prepended, so fx rules still win ties).
+# Needed for state combos added by JS (.nc-loader.is-hidden, .is-active ...) and for elements the JS
+# creates at runtime (board nodes, modal tabs), which never exist as Webflow elements.
+_V = {'nc-text':'#eef8ff','nc-text-dim':'rgba(238,248,255,0.62)','nc-gold':'#d4b87a','nc-gold-dim':'rgba(212,184,122,0.45)',
+      'nc-nav-gold':'#ffe899','nc-black':'#000','nc-pt-gold':'#ffce94','nc-pt-gold-soft':'rgba(255,206,148,0.36)',
+      'nc-pt-gold-dim':'rgba(255,206,148,0.66)','nc-font-serif':"'Noto Serif', serif",'nc-font-display':"'Cormorant Garamond', serif"}
+_nat = re.sub(r'var\(--_nc---([\w-]+)\)', lambda m: _V[m.group(1)], open(f'{OUT}/native.css').read())
+_fx = open(f'{OUT}/fx.css').read()
+_i = _fx.find(':root{')
+_fx = _fx[:_i] + '/* native rules (mirror of Webflow classes) */\n' + _nat + '\n' + _fx[_i:] if _i >= 0 else _nat + '\n' + _fx
+open(f'{OUT}/fx.css', 'w').write(_fx)
