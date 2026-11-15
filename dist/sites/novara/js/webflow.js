@@ -75,12 +75,12 @@
   $$('[data-split="roll"]').forEach(roll);
   $$('[data-split="letters"]').forEach(letters);
   /* .ln / .fl lines hold their text in one inner span */
-  $$(".ln, .fl").forEach(function (el) {
+  $$(".nv-ln, .nv-fl").forEach(function (el) {
     if (el.children.length === 0 && el.textContent.trim()) { var s = document.createElement("span"); s.textContent = el.textContent; el.textContent = ""; el.appendChild(s); }
   });
 
   /* CMS lists: order cards by the Order field (data-order) */
-  $$(".project-list").forEach(function (l) {
+  $$(".nv-project-list").forEach(function (l) {
     var it = Array.prototype.slice.call(l.children);
     if (!it.some(function (c) { return c.querySelector("[data-order]"); })) return;
     var n = function (c) { var e = c.querySelector("[data-order]"); return e ? parseFloat(e.getAttribute("data-order")) || 0 : 0; };
@@ -88,8 +88,8 @@
   });
 
   /* CMS rail: drop empty media slots */
-  $$(".pd-item video").forEach(function (v) { if (!v.getAttribute("src")) v.closest(".pd-item").remove(); });
-  $$(".pd-item img").forEach(function (im) { if (!im.getAttribute("src")) im.closest(".pd-item").remove(); });
+  $$(".nv-pd-item video").forEach(function (v) { if (!v.getAttribute("src")) v.closest(".nv-pd-item").remove(); });
+  $$(".nv-pd-item img").forEach(function (im) { if (!im.getAttribute("src")) im.closest(".nv-pd-item").remove(); });
   $$("video[data-muted]").forEach(function (v) { v.muted = true; });
   var next = document.getElementById("pd-next");
   if (next) {
@@ -99,7 +99,7 @@
   var st = document.createElement("style");
   st.textContent = "#pd-right .w-richtext+h4{margin-top:3.6vw}#pd-desc .w-richtext p+p{margin-top:1.1vw}"
     + "@media (max-width:767px){#menu{z-index:1}#logo,#back-btn,#header-right{z-index:2}.menu-open #menu-btn{background:#fff;color:#000}}"
-    + "@media (hover:none){#menu-btn:hover{background:var(--dark-white)}#menu-btn:hover .menu-btn-dots{transform:none}html.menu-open #menu-btn{background:#fff}html.menu-open #menu-btn .menu-btn-dots{transform:rotate(90deg)}}";
+    + "@media (hover:none){#menu-btn:hover{background:var(--dark-white)}#menu-btn:hover .nv-menu-btn-dots{transform:none}html.menu-open #menu-btn{background:#fff}html.menu-open #menu-btn .nv-menu-btn-dots{transform:rotate(90deg)}}";
   document.body.appendChild(st); // after the CSS embeds, so equal-specificity rules win
 
   /* same-site absolute links (CMS Link fields) → paths, so the page transition runs */
@@ -109,7 +109,7 @@
 
   /* active menu link */
   var path = location.pathname.replace(/\/$/, "");
-  $$(".menu-link").forEach(function (a) {
+  $$(".nv-menu-link").forEach(function (a) {
     var h = (a.getAttribute("href") || "").replace(/\/$/, "");
     var on = h === path || (page === "project" && h === "/novara/work");
     a.classList.toggle("is-active", on);

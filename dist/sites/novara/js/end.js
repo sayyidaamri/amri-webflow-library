@@ -2,9 +2,9 @@
 (function () {
   const NV = window.NV, { $, clamp, lerp, range } = NV; const E2 = (t) => 1 - Math.pow(1 - t, 4);
   const end = $("#end"); if (!end) return;
-  const blue = end.classList.contains("end--blue");
-  const canvas = end.querySelector(".end-canvas"), g = canvas.getContext("2d");
-  const wrap = end.querySelector(".end-stickers"), content = end.querySelector(".end-content");
+  const blue = end.classList.contains("is-blue");
+  const canvas = end.querySelector(".nv-end-canvas"), g = canvas.getContext("2d");
+  const wrap = end.querySelector(".nv-end-stickers"), content = end.querySelector(".nv-end-content");
   let W = 0, H = 0, dpr = Math.min(devicePixelRatio, 1.5);
   const resize = () => { W = canvas.clientWidth; H = canvas.clientHeight; canvas.width = W * dpr; canvas.height = H * dpr; };
   resize(); addEventListener("resize", resize);
@@ -47,7 +47,7 @@
 
   // astronaut in the middle (dark variant on the home page, where the journey ends)
   let astro = null, aR = null, aS = null, aC = null;
-  const ac = end.querySelector(".end-astro");
+  const ac = end.querySelector(".nv-end-astro");
   if (!blue && ac && window.THREE && NV.makeAstronaut && document.documentElement.dataset.page === "home") {
     const T = THREE;
     try { aR = new T.WebGLRenderer({ canvas: ac, antialias: true, alpha: true }); } catch (e) { aR = null; }

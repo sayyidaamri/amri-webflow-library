@@ -53,7 +53,7 @@
   }
 
   /* ======================= REEL ======================= */
-  const frame = $("#reel-frame"), stage = $("#reel-stage"), rc = $("#reel-canvas"), rplay = $("#reel-play"), rbtn = $("#reel-btn"), title1 = $(".reel-l1 > span");
+  const frame = $("#reel-frame"), stage = $("#reel-stage"), rc = $("#reel-canvas"), rplay = $("#reel-play"), rbtn = $("#reel-btn"), title1 = $(".nv-reel-l1 > span");
   const video = $("#reel-src");
   const rcontent = $("#reel-content");
   const g = rc && rc.getContext("2d");
@@ -254,7 +254,7 @@ void main(){
   addEventListener("pointermove", (e) => { mouse.x = e.clientX / innerWidth - 0.5; mouse.y = 0.5 - e.clientY / innerHeight; });
 
   let lastT = 0, played = {};
-  const words = $$(".tw", title);
+  const words = $$(".nv-tw", title);
   NV.onTick((dt, now) => {
     const vw = innerWidth, vh = innerHeight, gr = goal.getBoundingClientRect();
     if (gr.bottom < 0 || gr.top > vh * 1.2) { NV.forceDark = false; return; }

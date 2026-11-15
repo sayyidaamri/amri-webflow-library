@@ -2,7 +2,7 @@
 (function () {
   const NV = window.NV, { $, $$, clamp, lerp, range } = NV;
   const pin = $("#pd-pin"), track = $("#pd-track"), meta = $("#pd-meta"), hint = $("#pd-hint"), stage = $("#pd-stage");
-  const items = $$(".pd-item", track), vids = $$("video", track);
+  const items = $$(".nv-pd-item", track), vids = $$("video", track);
   let maxShift = 0;
   function layout() {
     if (NV.mobile) { pin.style.height = ""; maxShift = 0; return; }

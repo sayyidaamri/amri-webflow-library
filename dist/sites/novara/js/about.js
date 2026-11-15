@@ -37,8 +37,8 @@
     const tp = range(p, 0.56, 0.74), bp = range(p, 0.68, 0.86);
     top.style.opacity = range(p, 0.55, 0.6) * (1 - range(p, 0.93, 1)); bottom.style.opacity = range(p, 0.66, 0.7) * (1 - range(p, 0.93, 1));
     top.style.transform = `translateX(${-range(p, 0.9, 1) * 30}vw)`; bottom.style.transform = `translateX(${range(p, 0.9, 1) * 20}vw)`;
-    topWords.forEach((w, i) => w.classList.toggle("on", i / topWords.length < tp));
-    botWords.forEach((w, i) => w.classList.toggle("on", i / botWords.length < bp));
+    topWords.forEach((w, i) => w.classList.toggle("nv-on", i / topWords.length < tp));
+    botWords.forEach((w, i) => w.classList.toggle("nv-on", i / botWords.length < bp));
     // particles: swirling cloud that condenses into a beam
     g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
     const cond = NV.ease.io(range(p, 0.1, 0.5)), fade = 1 - range(p, 0.7, 0.95);
@@ -59,8 +59,8 @@
   /* ---------- TEAM ---------- */
   const team = $("#team"), data = JSON.parse($("#team-data").textContent), n = data.length;
   team.style.setProperty("--n", n);
-  const faces = $$(".face", team), letters = $$(".tl-wrap", team), nameEl = $("#team-name"), jobEl = $("#team-job"), numEl = $("#team-num"), progEl = $("#team-progress i");
-  letters.forEach((l) => $$(".px i", l).forEach((c) => c.style.setProperty("--d", Math.floor(Math.random() * 400))));
+  const faces = $$(".nv-face", team), letters = $$(".nv-tl-wrap", team), nameEl = $("#team-name"), jobEl = $("#team-job"), numEl = $("#team-num"), progEl = $("#team-progress i");
+  letters.forEach((l) => $$(".nv-px i", l).forEach((c) => c.style.setProperty("--d", Math.floor(Math.random() * 400))));
   const scramble = (el, text) => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#%&*+-/<>";
     let f = 0; const total = 14; clearInterval(el._t);
@@ -101,18 +101,18 @@
   });
 
   /* ---------- BRANDS marquee ---------- */
-  const rows = $$(".brand-row").map((r) => ({ el: r.firstElementChild, dir: +r.dataset.dir, x: Math.random() * -300 }));
+  const rows = $$(".nv-brand-row").map((r) => ({ el: r.firstElementChild, dir: +r.dataset.dir, x: Math.random() * -300 }));
   NV.onTick((dt) => {
     const v = 40 + Math.abs(NV.scroll.velocity) * 0.25;
     for (const r of rows) { const w = r.el.scrollWidth / 3; r.x -= r.dir * v * dt; if (r.x < -w) r.x += w; if (r.x > 0) r.x -= w; r.el.style.transform = `translateX(${r.x}px)`; }
   });
 
   /* ---------- AWARDS outline text ---------- */
-  const aw = $("#awards"), abg = $$(".awards-bg span");
+  const aw = $("#awards"), abg = $$(".nv-awards-bg span");
   NV.onTick(() => { const r = aw.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return; const p = range(innerHeight - r.top, 0, r.height + innerHeight); abg.forEach((s, i) => s.style.setProperty("--ax", (i % 2 ? -1 : 1) * (p * 30 - 15) - 10 + "vw")); });
 
   /* ---------- EXPERTISE deck ---------- */
-  const exp = $("#expertise"), cards = $$(".card", exp), studio = $("#exp-studio"), title = $("#exp-title"), sub = $("#exp-sub"), line = $("#exp-line path");
+  const exp = $("#expertise"), cards = $$(".nv-card", exp), studio = $("#exp-studio"), title = $("#exp-title"), sub = $("#exp-sub"), line = $("#exp-line path");
   let dealt = false;
   NV.onTick((dt, now) => {
     const r = exp.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;

@@ -169,31 +169,31 @@
   $$("#menu a").forEach((a) => a.addEventListener("click", () => NV.menuOpen() && html.classList.remove("menu-open")));
 
   /* ---------- NEWSLETTER (demo — never sends data) ---------- */
-  $$(".news-form").forEach((f) => {
-    const input = f.querySelector("input"), msg = f.querySelector(".news-msg");
+  $$(".nv-news-form").forEach((f) => {
+    const input = f.querySelector("input"), msg = f.querySelector(".nv-news-msg");
     f.addEventListener("submit", (e) => {
       e.preventDefault();
       const v = input.value.trim();
-      msg.className = "news-msg";
+      msg.className = "nv-news-msg";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) { msg.textContent = v ? "Please enter a valid email address." : "Please enter your email."; msg.classList.add("is-error"); input.focus(); Sound.play("focus"); return; }
       msg.textContent = "Thanks! You're on the list (demo — nothing was sent)."; msg.classList.add("is-ok"); input.value = ""; Sound.play("chime");
     });
-    input.addEventListener("input", () => { msg.textContent = ""; msg.className = "news-msg"; });
+    input.addEventListener("input", () => { msg.textContent = ""; msg.className = "nv-news-msg"; });
   });
 
   /* ---------- REVEALS ---------- */
   const io = new IntersectionObserver((ents) => ents.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("is-in"); io.unobserve(en.target); } }), { threshold: 0.15 });
-  NV.observeReveals = () => $$(".reveal, .reveal-words, .footer-middle, .end-sub").forEach((el) => io.observe(el));
+  NV.observeReveals = () => $$(".nv-reveal, .nv-reveal-words, .nv-footer-middle, .nv-end-sub").forEach((el) => io.observe(el));
 
   /* ---------- project item parallax ---------- */
-  $$(".project-item").forEach((it) => {
-    const m = it.querySelector(".pi-media");
+  $$(".nv-project-item").forEach((it) => {
+    const m = it.querySelector(".nv-pi-media");
     it.addEventListener("pointermove", (e) => { it.classList.add("is-moving"); clearTimeout(it._mt); it._mt = setTimeout(() => it.classList.remove("is-moving"), 120); const r = m.getBoundingClientRect(); it.style.setProperty("--mx", ((e.clientX - r.left) / r.width - 0.5) * -3 + "%"); it.style.setProperty("--my", ((e.clientY - r.top) / r.height - 0.5) * -3 + "%"); });
     it.addEventListener("pointerleave", () => { it.style.setProperty("--mx", "0%"); it.style.setProperty("--my", "0%"); });
   });
 
   /* ---------- project cards: scroll-linked entrance (image first, then text) ---------- */
-  const cards = $$(".project-item");
+  const cards = $$(".nv-project-item");
   if (cards.length) NV.onTick(() => {
     const vh = innerHeight;
     for (const c of cards) {
@@ -207,7 +207,7 @@
 
   /* ---------- grid cards flutter: only the bottom lifts toward the viewer, like paper blown from behind ---------- */
   if (cards.length && !reduced) {
-    const st = cards.map((c, i) => ({ m: c.querySelector(".pi-media"), b: 0, v: 0, ph: Math.random() * 6, side: i % 2 ? -1 : 1 }));
+    const st = cards.map((c, i) => ({ m: c.querySelector(".nv-pi-media"), b: 0, v: 0, ph: Math.random() * 6, side: i % 2 ? -1 : 1 }));
     NV.onTick((dt, now) => {
       if (NV.mobile) return;
       const target = Math.min(1, Math.abs(NV.scroll.velocity) / 4200);
@@ -227,8 +227,8 @@
   /* ---------- PAGE TRANSITIONS ---------- */
   /* pixel LOADING text (own 5x5 glyphs) */
   const PX = { L: "1000010000100001000011111", O: "0111010001100011000101110", A: "0111010001111111000110001", D: "1111010001100011000111110", I: "1111100100001000010011111", N: "1000111001101011001110001", G: "0111110000100111000101111", X: "1100011000110001100011111" };
-  const pxl = (ch, big) => `<span class="pxl${big ? " big" : ""}">${[...PX[ch]].map((b) => `<i class="${b === "1" ? "on" : ""}"></i>`).join("")}</span>`;
-  const loadBox = $("#transition .tr-load");
+  const pxl = (ch, big) => `<span class="pxl${big ? " big" : ""}">${[...PX[ch]].map((b) => `<i class="${b === "1" ? "nv-on" : ""}"></i>`).join("")}</span>`;
+  const loadBox = $("#transition .nv-tr-load");
   let loadTimer = 0;
   function playLoading() {
     if (!loadBox) return; clearInterval(loadTimer);
@@ -254,7 +254,7 @@
     const href = a.getAttribute("href");
     if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("http") || a.target === "_blank") return;
     e.preventDefault();
-    const pc = a.closest(".project-item") ? "#0b0c10" : a.id === "pd-next" ? getComputedStyle(document.body).getPropertyValue("--pbg") : "#0b0c10";
+    const pc = a.closest(".nv-project-item") ? "#0b0c10" : a.id === "pd-next" ? getComputedStyle(document.body).getPropertyValue("--pbg") : "#0b0c10";
     go(a.href, pc);
   });
   addEventListener("pageshow", (e) => { if (e.persisted) { html.classList.remove("t-out"); Sound.duck = 1; } });
@@ -309,8 +309,8 @@
     if (viaT) {
       html.classList.add("instant");
       const inView = (el) => { const r = el.getBoundingClientRect(); return r.top < innerHeight * 1.05 && r.bottom > 0; };
-      $$("#hero-title, #who-big, .reveal, .reveal-words, .footer-middle, .end-sub").forEach((el) => { if (inView(el)) el.classList.add("is-in"); });
-      $$(".project-item").forEach((el) => { if (inView(el)) el.classList.add("is-shown"); });
+      $$("#hero-title, #who-big, .nv-reveal, .nv-reveal-words, .nv-footer-middle, .nv-end-sub").forEach((el) => { if (inView(el)) el.classList.add("is-in"); });
+      $$(".nv-project-item").forEach((el) => { if (inView(el)) el.classList.add("is-shown"); });
       requestAnimationFrame(() => requestAnimationFrame(() => html.classList.remove("instant")));
     }
     html.classList.remove("is-loading"); html.classList.add("is-ready");
@@ -322,7 +322,7 @@
   const pre = $("#preloader");
   if (!html.classList.contains("no-preload") && pre && !reduced) {
     session.set("nv-visited", "1");
-    const digits = $$(".pl-d", pre), bar = $(".pl-bar", pre);
+    const digits = $$(".nv-pl-d", pre), bar = $(".nv-pl-bar", pre);
     let shown = 0, loaded = 0;
     const imgs = $$("img").slice(0, 12); const total = imgs.length + 1;
     const bump = () => loaded++;
