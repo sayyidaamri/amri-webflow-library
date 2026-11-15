@@ -533,7 +533,7 @@ void main(){
 
   /* ---------- split text ---------- */
   function splitChars(el) {
-    if (el.__split) return; el.__split = 1;
+    if (el.__split || el.querySelector("[data-split]")) return; el.__split = 1;
     const text = el.textContent.replace(/\s+/g, " ").trim();
     el.setAttribute("aria-label", text);
     el.textContent = "";
@@ -627,7 +627,7 @@ void main(){
 
   /* ---------- reveals ---------- */
   const inIO = new IntersectionObserver((ens) => ens.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("is-in"); inIO.unobserve(en.target); } }), { threshold: 0.15, rootMargin: "0px 0px -5% 0px" });
-  onBoot.push(() => $$("[data-split], .ks-reveal").forEach((el) => {
+  onBoot.push(() => $$("[data-split], [data-reveal]").forEach((el) => {
     if (el.closest(".ks-modal")) return el.classList.add("is-in");
     if (el.closest("[data-hero]")) return setTimeout(() => el.classList.add("is-in"), 250);
     inIO.observe(el);
