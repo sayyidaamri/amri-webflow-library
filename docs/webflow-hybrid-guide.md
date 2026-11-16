@@ -64,3 +64,6 @@ Use Webflow breakpoints (991, 767, 479). No duplicated desktop and mobile markup
 4. All internal links work (components, pages, CMS templates, link fields).
 5. Publish, then test the live page: effects start, buttons and links work, filters work.
 6. Remove unused styles and list leftover placeholders.
+
+## Assets
+- Images and video come from Unsplash and Mixkit. Sound comes from Pixabay, Mixkit, Freesound or Zapsplat. Everything must fit the website's context, and every file's source and licence is recorded in `ASSETS.md`.
