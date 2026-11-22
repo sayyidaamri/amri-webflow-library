@@ -138,7 +138,7 @@ art=js['art']
 art=art.replace('    8: [".###.",','    P: ["####.","#...#","#...#","####.","#....","#....","#...."],\n    I: ["###",".#.",".#.",".#.",".#.",".#.","###"],\n    X: ["#...#","#...#",".#.#.","..#..",".#.#.","#...#","#...#"],\n    E: ["#####","#....","#....","####.","#....","#....","#####"],\n    L: ["#....","#....","#....","#....","#....","#....","#####"],\n    M: ["#...#","##.##","#.#.#","#.#.#","#...#","#...#","#...#"],\n    O: [".###.","#...#","#...#","#...#","#...#","#...#",".###."],\n    S: [".####","#....","#....",".###.","....#","....#","####."],\n    8: [".###.",',1)
 js['art']=art
 bundle='/* PIXELMOSS (Amri Webflow Library) — built from jld2nd.dev by tools/pixelmoss/build.py */\n'
-bundle+='\n'.join(ren_js(js[n]) for n in jsnames)+'\n'+rd(f'{HERE}/arcade.js')
+bundle+='\n'.join(ren_js(js[n]) for n in jsnames)+'\n'+rd(f'{HERE}/arcade.js')+'\n'+rd(f'{HERE}/arcade-page.js')
 HOME_HDR='/* PIXELMOSS — home page: loader, intro, modes, chomper nav, scroll-driven scenes. */\n(function () {\n  const A = window.ART, K = window.CORE;\n'
 bundle=bundle.replace(HOME_HDR,HOME_HDR+rd(f'{HERE}/subpage.js'),1)  # guard: sub pages (play/arcade/contact)
 open(f'{DIST}/js/pixelmoss.js','w').write(sep_art(bundle))

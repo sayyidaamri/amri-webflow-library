@@ -35,6 +35,7 @@
       }
     },
   };
+  window.PMATTRACT = draw;
   const cabs = [...document.querySelectorAll(".pm-arcade-cab")];
   if (!cabs.length) return;
   const rm = matchMedia("(prefers-reduced-motion: reduce)").matches;
