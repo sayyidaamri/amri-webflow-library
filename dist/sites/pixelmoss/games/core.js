@@ -140,7 +140,8 @@
 
   /* ---------- loading ---------- */
   function loadScript(id) {
-    const srcs = [base + "games/" + id + ".js", base.replace(/@[^/]+\//, "@main/") + "games/" + id + ".js"];
+    const alts = (b, f) => { const m = b.match(/@([0-9a-f]{7,40})\//), r = m ? m[1] : ""; return [...new Set([r, r.slice(0, 7), r.slice(0, 10), "main"])].filter(Boolean).map((x) => (m ? b.replace(m[0], "@" + x + "/") : b) + f); };
+    const srcs = alts(base, "games/" + id + ".js");
     return new Promise((ok, no) => {
       const next = (i) => {
         if (i >= srcs.length) return no();

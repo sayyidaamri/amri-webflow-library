@@ -6,7 +6,8 @@
     K.gridTrail(); K.contactModal(); K.soundButtons(); K.blips();
     requestAnimationFrame(() => R.classList.add("is-ready"));
     if (document.getElementById("play-screen") && !window.PMG) {
-      const b = R.dataset.base || "", srcs = [b + "games/core.js", b.replace(/@[^/]+\//, "@main/") + "games/core.js"];
+      const alts = (b, f) => { const m = b.match(/@([0-9a-f]{7,40})\//), r = m ? m[1] : ""; return [...new Set([r, r.slice(0, 7), r.slice(0, 10), "main"])].filter(Boolean).map((x) => (m ? b.replace(m[0], "@" + x + "/") : b) + f); };
+      const srcs = alts(R.dataset.base || "", "games/core.js");
       const go = (i) => { if (i >= srcs.length) return; const s = document.createElement("script"); s.src = srcs[i]; s.onerror = () => { s.remove(); go(i + 1); }; document.head.appendChild(s); };
       go(0);
     }
