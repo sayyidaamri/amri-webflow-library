@@ -21,3 +21,6 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;b
 @media (max-width:991px){.arcade-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:767px){#arcade{padding:100px var(--page-gutter) 110px}.arcade-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.arcade-cab{padding:8px}.arcade-name{font-size:var(--fs-text-lg)}}
 @media (prefers-reduced-motion:reduce){.arcade-cab:hover .arcade-start{animation:none}}
+
+/* contrast: outline so "Fit!" reads over light stack blocks */
+#tetris-perfect{text-shadow:-3px 0 0 var(--color-ink),3px 0 0 var(--color-ink),0 -3px 0 var(--color-ink),0 3px 0 var(--color-ink),-3px -3px 0 var(--color-ink),3px 3px 0 var(--color-ink),-3px 3px 0 var(--color-ink),3px -3px 0 var(--color-ink),6px 6px 0 var(--color-ink)}
