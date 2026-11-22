@@ -33,7 +33,7 @@ def mono(s):
 
 # ---------- classes ----------
 html=rd(f'{REF}/index.html')
-for a,b in COPY: html=html.replace(a,b)
+for a,b in COPY: html=html.replace(a,b).replace(a.replace('<br/>','<br>'),b)
 soup=BeautifulSoup(html,'html.parser')
 css_src=rd(f'{REF}/assets/css/base.css')+'\n'+rd(f'{REF}/assets/css/home.css')
 jsnames=['art','core','home']; js={n:rd(f'{REF}/assets/js/{n}.js') for n in jsnames}
@@ -114,6 +114,8 @@ body=soup.body
 for s in body.find_all('script'): s.decompose()
 for b in body.find_all('button'):
     b.name='div'; b['role']='button'; b['tabindex']='0'; b.attrs.pop('type',None)
+arc=BeautifulSoup(rd(f'{HERE}/arcade.html'),'html.parser')
+body.find(id='hands').insert_after(arc)
 for x in body.find_all(class_=True): x['class']=[pm(c) if c in P else c for c in x['class']]
 for a in body.find_all('a'):
     if not a.get('href'): a['href']='#'
@@ -123,13 +125,11 @@ for a in ol.find_all('a'):
     k=a.get('data-section'); 
     if k in NAV: a['aria-label']=NAV[k]; a['title']=NAV[k]
 hands_li=ol.find('a',attrs={'data-section':'hands'}).parent
-li=soup.new_tag('li'); na=soup.new_tag('a',href='#',attrs={'class':'pm-section-nav-food','data-section':'arcade','aria-label':'Arcade','title':'Arcade'}); li.append(na); hands_li.insert_after(li)
+li=soup.new_tag('li'); na=soup.new_tag('a',attrs={'class':'pm-section-nav-food','data-section':'arcade','href':'#arcade','aria-label':'Arcade','title':'Arcade'}); li.append(na); hands_li.insert_after(li)
 for a in body.select('#home-dock a'):
     t=a.get('title','')
     if t=='Game': a['href']='/pixelmoss/play'
     if t=='Projects': a['title']='Arcade'; a['aria-label']='Arcade'; a['href']='/pixelmoss/arcade'
-arc=BeautifulSoup(rd(f'{HERE}/arcade.html'),'html.parser')
-body.find(id='hands').insert_after(arc)
 def mini(e):
     h=str(e).replace('<br/>','<br>'); h=re.sub(r'>\s+<','><',h); return re.sub(r'\s{2,}',' ',h).strip()
 frags={}

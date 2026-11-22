@@ -343,7 +343,7 @@
     play(name, vol = 0.35) {
       if (!this.on) return;
       try {
-        if (!SFX[name]) SFX[name] = new Audio(`${base}assets/audio/${name}.mp3`);
+        if (!SFX[name]) SFX[name] = new Audio(`${base}audio/${name}.mp3`);
         const a = SFX[name].cloneNode(); a.volume = vol; a.play().catch(() => {});
       } catch {}
     },
@@ -353,7 +353,7 @@
       if (this.wantMusic) this.syncMusic();
     },
     syncMusic() {
-      if (!this.music) { this.music = new Audio(`${base}assets/audio/music.mp3`); this.music.loop = true; this.music.volume = 0.22; }
+      if (!this.music) { this.music = new Audio(`${base}audio/music.mp3`); this.music.loop = true; this.music.volume = 0.22; }
       if (this.on) this.music.play().catch(() => {}); else this.music.pause();
     },
   };
