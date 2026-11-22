@@ -70,8 +70,8 @@
     "..CCCCCCcCCCCCCCCCCCCCCCcCCCCCC.",
   ];
   const avatarPal = {
-    dev: { Y: C.lime, y: "#f3f3ef", H: "#2e2e2e", h: "#2e2e2e", S: "#b5b5b5", s: "#6b6b6b", K: "#161616", W: "#f3f3ef", M: "#2e2e2e", T: "#f3f3ef", C: "#2e2e2e", c: "#2e2e2e", Z: C.lime },
-    creative: { Y: C.pink, y: "#6b6b6b", H: "#2e2e2e", h: "#2e2e2e", S: "#b5b5b5", s: "#6b6b6b", K: "#161616", W: "#f3f3ef", M: "#2e2e2e", T: "#f3f3ef", C: "#f3f3ef", c: "#f3f3ef", Z: C.red },
+    dev: { Y: C.lime, y: "#b5b5b5", H: "#2e2e2e", h: "#6b6b6b", S: "#b5b5b5", s: "#6b6b6b", K: "#161616", W: "#f3f3ef", M: "#2e2e2e", T: "#f3f3ef", C: "#2e2e2e", c: "#6b6b6b", Z: C.lime },
+    creative: { Y: C.pink, y: "#b5b5b5", H: "#2e2e2e", h: "#6b6b6b", S: "#b5b5b5", s: "#6b6b6b", K: "#161616", W: "#f3f3ef", M: "#2e2e2e", T: "#f3f3ef", C: "#f3f3ef", c: "#b5b5b5", Z: C.red },
   };
 
   /* ---------- MINI SPRITE (14 x 28) ---------- */
@@ -106,8 +106,8 @@
     "...KKKK.KKKK..",
   ];
   const miniPal = {
-    dev: { ...avatarPal.dev, P: "#2e2e2e", p: "#2e2e2e" },
-    creative: { ...avatarPal.creative, P: "#6b6b6b", p: "#6b6b6b" },
+    dev: { ...avatarPal.dev, P: "#2e2e2e", p: "#6b6b6b" },
+    creative: { ...avatarPal.creative, P: "#6b6b6b", p: "#b5b5b5" },
   };
 
   /* ---------- BRAIN half (13 x 16), right half = mirror ---------- */
@@ -210,7 +210,7 @@
     "BBBBBBBBBBBB.hhhhhhhh...........",
     "BBBBBBBBBBBB....................",
   ];
-  const handLPal = { B: C.lime, h: "#f3f3ef", s: "#f3f3ef" };
+  const handLPal = { B: C.lime, h: "#b5b5b5", s: "#f3f3ef" };
   const handR = mirror([
     "BBBBBBBBBBBB....................",
     "BBBBBBBBBBBB....................",
@@ -225,7 +225,7 @@
     "BBBBBBBBBBBB.hhhhhhhhh..........",
     "BBBBBBBBBBBB....................",
   ]);
-  const handRPal = { B: "#2e2e2e", h: C.cream, s: "#e2e2de" };
+  const handRPal = { B: "#6b6b6b", h: C.cream, s: "#b5b5b5" };
 
   /* ---------- PROFILE HEAD (24 x 25) facing left ---------- */
   const head = [

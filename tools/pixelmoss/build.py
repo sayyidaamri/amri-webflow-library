@@ -31,6 +31,38 @@ def mono(s):
     s=re.sub(r'#([0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3,4})\b(?![\w-])',mono_hex,s)
     return re.sub(r'(rgba?)\(\s*([\d.\s,%]+)\)',mono_rgba,s)
 
+# ---------- art contrast: near() collapses shade pairs (skin/shadow, sleeve/skin, hair/highlight) ----------
+BG=PAL[0]; GAP=60
+SEP_PAIRS=[('Y','y'),('H','h'),('C','c'),('S','s'),('P','p')]
+HAND_PAIRS=[('B','h'),('h','s')]          # sleeve/skin, skin/nail shading
+BG_FLOOR={'handRPal':('B',),'handLPal':('B',)}   # sleeves must read against the #0a0a0a section bg
+def unhx(h): return tuple(int(h[i:i+2],16) for i in (1,3,5))
+def away(base):
+    """nearest PAL shade >= GAP luminance from base; light bases go darker, dark go lighter."""
+    Lb=lum(*base); order=sorted(PAL,key=lambda p: abs(lum(*p)-Lb))
+    pref=[p for p in order if abs(lum(*p)-Lb)>=GAP and ((lum(*p)<Lb) if Lb>150 else (lum(*p)>Lb))]
+    return (pref or [p for p in order if abs(lum(*p)-Lb)>=GAP] or [order[-1]])[0]
+def sep_art(js):
+    m=re.search(r'const C = \{(.*?)\};',js,re.S)
+    C={k:v for k,v in re.findall(r'(\w+):\s*"(#[0-9a-f]{6})"',m.group(1))} if m else {}
+    def fix_obj(name,body):
+        ents=re.findall(r'(\w+):\s*("#[0-9a-f]{6}"|C\.\w+)',body)
+        val={k:(v.strip('"') if v.startswith('"') else C.get(v[2:],'')) for k,v in ents}
+        new=dict(val)
+        for k in BG_FLOOR.get(name,()):
+            if k in new and abs(lum(*unhx(new[k]))-lum(*BG))<GAP: new[k]=hx(away(BG))
+        for a,b in (HAND_PAIRS if name.startswith('hand') else SEP_PAIRS):
+            if a in new and b in new and abs(lum(*unhx(new[a]))-lum(*unhx(new[b])))<GAP: new[b]=hx(away(unhx(new[a])))
+        for k in new:
+            if new[k]!=val[k]: body=re.sub(r'(\b%s:\s*)("#[0-9a-f]{6}"|C\.\w+)'%k,lambda q:q.group(1)+'"%s"'%new[k],body,count=1)
+        return body
+    js=re.sub(r'(const (handLPal|handRPal|glassesPal) = )\{([^{}]*)\}',lambda q:q.group(1)+'{'+fix_obj(q.group(2),q.group(3))+'}',js)
+    js=re.sub(r'(\n\s*(dev|creative): \{ )([^{}]*?)( \},)',lambda q:q.group(1)+(fix_obj(q.group(2),q.group(3)) if '...' not in q.group(3) else q.group(3))+q.group(4),js)
+    js=re.sub(r'(\n\s*(dev|creative): \{ \.\.\.avatarPal\.\w+, )([^{}]*?)( \},)',lambda q:q.group(1)+fix_obj(q.group(2),q.group(3))+q.group(4),js)
+    return js
+if '--fix-dist' in sys.argv:   # ref repo not needed: re-run only the contrast pass on the built bundle
+    p=f'{DIST}/js/pixelmoss.js'; s=sep_art(rd(p)); open(p,'w').write(s); sys.exit(0)
+
 # ---------- classes ----------
 html=rd(f'{REF}/index.html')
 for a,b in COPY: html=html.replace(a,b).replace(a.replace('<br/>','<br>'),b)
@@ -107,7 +139,7 @@ art=art.replace('    8: [".###.",','    P: ["####.","#...#","#...#","####.","#..
 js['art']=art
 bundle='/* PIXELMOSS (Amri Webflow Library) — built from jld2nd.dev by tools/pixelmoss/build.py */\n'
 bundle+='\n'.join(ren_js(js[n]) for n in jsnames)+'\n'+rd(f'{HERE}/arcade.js')
-open(f'{DIST}/js/pixelmoss.js','w').write(bundle)
+open(f'{DIST}/js/pixelmoss.js','w').write(sep_art(bundle))
 
 # ---------- markup -> whtml fragments ----------
 body=soup.body
