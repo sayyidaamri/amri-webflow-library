@@ -11,8 +11,8 @@
   const W = 320, H = 240;
   const C = { ink: "#0a0a0a", pap: "#f3f3ef", g1: "#6b6b6b", g2: "#2e2e2e", g3: "#b5b5b5", g4: "#161616" };
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const GAMES = [["dash", "Moss Dash", 1], ["bloom", "Brick Bloom", 0.35], ["trail", "Snail Trail", 0.02], ["stack", "Stack Drop", 0.008], ["pairs", "Pixel Pairs", 0.12]];
-  const READY = ["dash", "bloom"];
+  const GAMES = [["dash", "Moss Dash", 1], ["bloom", "Brick Bloom", 0.35], ["trail", "Snail Trail", 0.03], ["stack", "Stack Drop", 0.004], ["pairs", "Pixel Pairs", 0.08]];
+  const READY = ["dash", "bloom", "trail", "stack", "pairs"];
   const TUT = {
     dash: ["Space to jump", "S to switch mode", "D or C for power"],
     bloom: ["← → to move", "Catch the ball", "Combos grow more moss"],
@@ -107,9 +107,12 @@
   /* ---------- board ---------- */
   function board(hl) {
     const g = info(cur), mine = store.get("board:" + cur, []);
-    const all = [...SEED.map(([n, s]) => ({ n, s: Math.max(1, Math.round(s * g[2])) })), ...mine].sort((a, b) => b.s - a.s).slice(0, 10);
+    const full = [...SEED.map(([n, s]) => ({ n, s: Math.max(1, Math.round(s * g[2])) })), ...mine].sort((a, b) => b.s - a.s), all = full.slice(0, 10);
+    const row = (r, i, c) => `<li class="${c}"><span class="pm-lb-rank">${String(i + 1).padStart(2, "0")}</span><span class="pm-lb-name">${esc(r.n)}</span><span class="pm-lb-score">${r.s}</span></li>`;
+    // 11th row "you": the just-saved score (or your best) when it sits outside the TOP 10
+    const me = hl ? mine.find((r) => r.id === hl) : mine[0], out = me && !all.includes(me);
     if (el.btitle) el.btitle.textContent = "TOP 10 · " + g[1].toUpperCase();
-    if (el.list) el.list.innerHTML = "<ol>" + all.map((r, i) => `<li class="${hl && r.id === hl ? "is-you" : ""}"><span class="pm-lb-rank">${String(i + 1).padStart(2, "0")}</span><span class="pm-lb-name">${esc(r.n)}</span><span class="pm-lb-score">${r.s}</span></li>`).join("") + "</ol>";
+    if (el.list) el.list.innerHTML = "<ol>" + all.map((r, i) => row(r, i, hl && r.id === hl ? "is-you" : "")).join("") + (out ? row({ n: "YOU · " + me.n, s: me.s }, full.indexOf(me), "is-you pm-lb-out") : "") + "</ol>";
   }
 
   /* ---------- SAVE_SCORE.EXE ---------- */
